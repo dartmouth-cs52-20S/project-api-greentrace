@@ -3,7 +3,7 @@ import Post from '../models/post-model';
 export const createPost = (req, res) => {
   const post = new Post();
   post.title = req.body.title;
-  post.tags = req.body.tags;
+  post.tags = req.body.tags.split(', ');
   post.content = req.body.content;
   post.coverUrl = req.body.coverUrl;
   post.save()
@@ -16,7 +16,7 @@ export const createPost = (req, res) => {
 };
 
 export const getPosts = (req, res) => {
-  Post.find({})
+  Post.find({}).sort({ updatedAt: 'desc' })
     .then((posts) => {
       res.json(posts);
     })
@@ -55,7 +55,7 @@ export const updatePost = (req, res) => {
         post.title = req.body.title;
       }
       if (req.body.tags !== '') {
-        post.tags = req.body.tags;
+        post.tags = req.body.tags.split(', ');
       }
       if (req.body.content !== '') {
         post.content = req.body.content;
