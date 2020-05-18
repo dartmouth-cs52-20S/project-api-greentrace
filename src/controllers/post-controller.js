@@ -6,6 +6,7 @@ export const createPost = (req, res) => {
   post.tags = req.body.tags.split(', ');
   post.content = req.body.content;
   post.coverUrl = req.body.coverUrl;
+  post.author = req.user.id;
   post.save()
     .then((result) => {
       res.json({ message: 'Post created!' });
@@ -26,7 +27,7 @@ export const getPosts = (req, res) => {
 };
 
 export const getPost = (req, res) => {
-  return Post.findOne({ _id: req.params.id })
+  return Post.findOne({ _id: req.params.id }).populate('author', 'username')
     .then((post) => {
       res.json(post);
     })
