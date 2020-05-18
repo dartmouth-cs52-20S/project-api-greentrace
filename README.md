@@ -10,4 +10,4 @@ Procfile set up to run on [heroku](https://devcenter.heroku.com/articles/getting
 
 # Lab 5: API + Auth
 
-Includes sign in, sign up, and sign out functionality. Users must be authenticated to create, update or delete posts. Users sign in with their email and password, and if they write a post, their username is displayed as the author.
+Includes sign in, sign up, and sign out functionality. Has a user model to store usernames, emails, and salted+hashed passwords. Users must be authenticated to create, update or delete posts. Users sign in with their email and password, and if they write a post, their username is displayed as the author.
