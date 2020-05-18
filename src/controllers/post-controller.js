@@ -22,7 +22,7 @@ export const getPosts = (req, res) => {
       res.json(posts);
     })
     .catch((error) => {
-      res.status(501).json({ error });
+      res.status(500).json({ error });
     });
 };
 
@@ -32,7 +32,7 @@ export const getPost = (req, res) => {
       res.json(post);
     })
     .catch((error) => {
-      res.status(502).json({ error });
+      res.status(500).json({ error });
     });
 };
 
@@ -44,7 +44,7 @@ export const deletePost = (req, res) => {
           res.json({ message: 'Post deleted!' });
         })
         .catch((error) => {
-          res.status(503).json({ error });
+          res.status(500).json({ error });
         });
     });
 };
@@ -69,7 +69,7 @@ export const updatePost = (req, res) => {
           res.json(post);
         })
         .catch((error) => {
-          res.status(504).json({ error });
+          res.status(500).json({ error });
         });
     });
 };
