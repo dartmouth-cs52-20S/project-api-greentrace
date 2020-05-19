@@ -19,6 +19,6 @@ TODO: how to deploy the project
 
 ## Authors
 
-TODO: list of authors
+Samiha, Srishti, David, Hershel, Aditya, Zack
 
 ## Acknowledgments
