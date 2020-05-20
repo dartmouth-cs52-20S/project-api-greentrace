@@ -4,11 +4,11 @@ import cors from 'cors';
 import path from 'path';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
-import * as Posts from './controllers/post-controller';
+import * as Events from './controllers/event-controller';
 import apiRouter from './router';
 
 // DB Setup
-const mongoURI = process.env.MONGODB_URI || 'mongodb://heroku_3p0lb69r:rlp9tefg8hqjk7jta09irnmvk8@ds333248.mlab.com:33248/heroku_3p0lb69r';
+const mongoURI = process.env.MONGODB_URI || 'mongodb://heroku_lp9s4k0k:pce2ncfhrbohsivej0ej2btont@ds215388.mlab.com:15388/heroku_lp9s4k0k';
 mongoose.connect(mongoURI);
 
 // set mongoose promises to es6 default
@@ -41,24 +41,17 @@ app.use('/api', apiRouter);
 
 // default index route
 app.get('/', (req, res) => {
-  Posts.getPosts(req, res);
+  Events.getEvents(req, res);
 });
 
-app.post('/posts', (req, res) => {
-  Posts.createPost(req, res);
+app.post('/events', (req, res) => {
+  Events.addEvent(req, res);
 });
 
-app.get('/posts/:id', (req, res) => {
-  Posts.getPost(req, res);
+app.get('/events', (req, res) => {
+  Events.getEvents(req, res);
 });
 
-app.put('/posts/:id', (req, res) => {
-  Posts.updatePost(req, res);
-});
-
-app.delete('/posts/:id', (req, res) => {
-  Posts.deletePost(req, res);
-});
 
 // START THE SERVER
 // =============================================================================
