@@ -13,7 +13,7 @@
   },
   "license": "ISC",
   "engines": {
-    "node": ">=9 <=13",
+    "node": ">=9 <=15",
     "npm": "^5.6.0",
     "yarn": "^1.6.0"
   },
@@ -34,6 +34,7 @@
     "express": "^4.17.1",
     "jwt-simple": "^0.5.6",
     "mongoose": "^5.9.13",
+    "mongoose-geojson-schema": "^2.1.5",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
