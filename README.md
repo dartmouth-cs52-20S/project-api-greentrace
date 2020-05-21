@@ -1,13 +1,41 @@
-# Project Name
+# Greentrace server
 
 ![Team Photo](Insert a Team Photo URL here)
-[*how?*](https://help.github.com/articles/about-readmes/#relative-links-and-image-paths-in-readme-files)
 
-TODO: short project description, some sample screenshots or mockups
+The Greentrace server. Communicates with a Mongo database.
+
+#### GET /api/events
+
+- No parameters
+- Returns all latitude,longitude pairs that have been added
+
+#### POST /api/events
+
+- Parameters: An object with `longitude` and `latitude` fields (in that order). Values should be integers or floats.
+- Doesn't return anything
 
 ## Architecture
 
-TODO:  descriptions of code organization and tools and libraries used
+```
+.
+├── Procfile
+├── README.md
+├── package.json
+├── src
+│   ├── controllers
+│   │   ├── event-controller.js
+│   │   └── user-controller.js
+│   ├── models
+│   │   ├── event-model.js
+│   │   └── user-model.js
+│   ├── router.js
+│   ├── server.js
+│   └── services
+│       └── passport.js
+├── static
+│   └── style.css
+└── yarn.lock
+```
 
 ## Setup
 
