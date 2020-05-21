@@ -11,14 +11,16 @@ TODO:  descriptions of code organization and tools and libraries used
 
 ## Setup
 
-TODO: how to get the project dev environment up and running, npm install etc
+To fetch dependencies, run `yarn`
+
+To run the server locally, run `yarn dev`
 
 ## Deployment
 
-TODO: how to deploy the project
+Deployed on [Heroku](https://greentrace-server.herokuapp.com/)
 
 ## Authors
 
-Samiha, Srishti, David, Hershel, Aditya, Zack
+Samiha Datta, Srishti Bagchi, David Kantor, Hershel Wathore, Aditya Choudhari, Zack Gottesman
 
 ## Acknowledgments
