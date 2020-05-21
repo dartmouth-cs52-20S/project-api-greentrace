@@ -14,7 +14,7 @@ export const addEvent = (req, res) => {
   const event = new Event();
   event.sourceUser = req.user;
   event.location.type = 'Point';
-  event.location.coordinates = [req.longitude, req.latitude];
+  event.location.coordinates = [req.body.longitude, req.body.latitude];
   event.save()
     .then(((result) => {
       // maybe return some sort of success indicator here
