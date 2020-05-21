@@ -12,7 +12,7 @@ export const getEvents = (req, res) => {
 
 export const addEvent = (req, res) => {
   const event = new Event();
-  event.sourceUser = req.user;
+  // event.sourceUser = req.user;
   event.location.type = 'Point';
   event.location.coordinates = [req.body.longitude, req.body.latitude];
   event.save()
