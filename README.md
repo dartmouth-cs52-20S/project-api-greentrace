@@ -7,7 +7,7 @@ The Greentrace server. Communicates with a Mongo database.
 #### GET /api/events
 
 - No parameters
-- Returns all latitude,longitude pairs that have been added
+- Returns all Event objects that have been added. For an Event instance, `event`, `event.location.coordinates` is an array that contains longitude at index 0 and latitude at index 1. 
 
 #### POST /api/events
 
