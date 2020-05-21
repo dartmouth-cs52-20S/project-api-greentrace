@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
 const PostSchema = new Schema({
-  sourceUser: { type: Schema.Types.ObjectId, ref: 'User' },
+  // sourceUser: { type: Schema.Types.ObjectId, ref: 'User' },
   location: {
     type: {
       type: String,
