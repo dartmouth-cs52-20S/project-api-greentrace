@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import * as Events from './controllers/event-controller';
+import * as Observations from './controllers/observation-controller';
+import * as User from './controllers/user-controller';
 // import { requireAuth, requireSignin } from './services/passport';
 
 
@@ -10,8 +11,16 @@ router.get('/', (req, res) => {
 });
 
 
-router.route('/events')
-  .get(Events.getEvents)
-  .post(Events.addEvent);
+router.route('/location')
+  .post(Observations.addEvent)
+  .get(Observations.printWelcome);
+
+router.route('/user/')
+  .put(User.updateUser)
+  .get(User.getMessages);
+
+router.post('/signin', User.signin); // add requireSignin here, requireAuth elsewhere
+
+router.post('/signup', User.signup);
 
 export default router;
