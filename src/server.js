@@ -52,7 +52,11 @@ app.put('/user/:did', (req, res) => {
   User.updateUser(req, res);
 });
 
-app.get('/user/:did/', (req, res) => {
+app.get('/user/:did', (req, res) => {
+  User.getUser(req, res);
+});
+
+app.get('/user/:did/messages', (req, res) => {
   User.getMessages(req, res);
 });
 

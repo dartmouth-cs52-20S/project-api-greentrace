@@ -88,6 +88,17 @@ export const getMessages = (req, res) => {
     });
 };
 
+export const getUser = (req, res) => {
+  return User.findOne({ email: `${req.params.did}@dartmouth.edu` })
+    // eslint-disable-next-line consistent-return
+    .then((user) => {
+      return res.json({ message: user });
+    })
+    .catch((error) => {
+      return res.status(500).send({ error });
+    });
+};
+
 export const addMessage = (req, res) => {
   return User.findOne({ email: `${req.params.did}@dartmouth.edu` })
     // eslint-disable-next-line consistent-return

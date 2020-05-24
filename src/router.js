@@ -17,6 +17,9 @@ router.route('/location')
 
 router.route('/user/:did')
   .put(User.updateUser)
+  .get(User.getUser);
+
+router.route('/user/:did/messages')
   .get(User.getMessages);
 
 router.post('/signin', User.signin); // add requireSignin here, requireAuth elsewhere
