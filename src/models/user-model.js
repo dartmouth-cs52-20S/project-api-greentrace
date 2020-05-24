@@ -27,9 +27,6 @@ const UserSchema = new Schema({
       ret.id = ret._id;
       delete ret._id;
       delete ret.password;
-      delete ret.tested;
-      delete ret.symptoms;
-      delete ret.hasCovid;
       delete ret.__v;
       return ret;
     },
