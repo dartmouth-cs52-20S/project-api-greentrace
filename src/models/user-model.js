@@ -9,6 +9,7 @@ const MessageSchema = new Schema({
   tested: { type: Boolean },
   covid: { type: Boolean },
   timestamp: { type: String },
+  contactDate: { type: String },
 });
 
 const UserSchema = new Schema({
