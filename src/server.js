@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 import * as Observations from './controllers/observation-controller';
 import * as User from './controllers/user-controller';
+import { getNumPeopleTested } from './services/utils';
 import apiRouter from './router';
 
 // DB Setup
@@ -44,20 +45,36 @@ app.use('/api', apiRouter);
 app.get('/', (req, res) => {
 });
 
+app.get('/stats', (req, res) => {
+  getNumPeopleTested(req, res);
+});
+
 app.post('/location', (req, res) => {
   Observations.addObservation(req, res);
 });
 
-app.put('/user/:did', (req, res) => {
+app.put('/user/:id', (req, res) => {
   User.updateUser(req, res);
 });
 
-app.get('/user/:did', (req, res) => {
+app.get('/user/:id', (req, res) => {
   User.getUser(req, res);
 });
 
-app.get('/user/:did/messages', (req, res) => {
+app.get('/user/:id/risk', (req, res) => {
+  User.getRiskScore(req, res);
+});
+
+app.get('/user/:id/numcontacts', (req, res) => {
+  User.getNumContactsCovidPositive(req, res);
+});
+
+app.get('/user/:id/messages', (req, res) => {
   User.getMessages(req, res);
+});
+
+app.post('/user/:id/messages', (req, res) => {
+  User.addMessage(req, res);
 });
 
 

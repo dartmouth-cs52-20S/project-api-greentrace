@@ -2,6 +2,7 @@ import jwt from 'jwt-simple';
 import dotenv from 'dotenv';
 import moment from 'moment';
 import User from '../models/user-model';
+import { riskScorer } from '../services/utils';
 
 
 dotenv.config({ silent: true });
@@ -13,7 +14,10 @@ function tokenForUser(user) {
 }
 
 export const signin = (req, res, next) => {
-  res.send({ token: tokenForUser(req.user) });
+  res.send({
+    token: tokenForUser(req.user),
+    user: req.user,
+  });
 };
 
 export const signup = (req, res, next) => {
@@ -39,7 +43,10 @@ export const signup = (req, res, next) => {
         newUser.messages = [];
         newUser.save()
           .then((result) => {
-            res.send({ token: tokenForUser(result) });
+            res.send({
+              token: tokenForUser(result),
+              user: result,
+            });
           })
           .catch((error) => {
             return res.status(500).send({ error });
@@ -52,7 +59,7 @@ export const signup = (req, res, next) => {
 };
 
 export const updateUser = (req, res) => {
-  return User.findOne({ email: `${req.params.did}@dartmouth.edu` })
+  return User.findOne({ _id: req.params.id })
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if ('tested' in req.body) {
@@ -78,7 +85,7 @@ export const updateUser = (req, res) => {
 };
 
 export const getMessages = (req, res) => {
-  return User.findOne({ email: `${req.params.did}@dartmouth.edu` })
+  return User.findOne({ _id: req.params.id })
     // eslint-disable-next-line consistent-return
     .then((user) => {
       return res.json({ message: user.messages });
@@ -89,7 +96,7 @@ export const getMessages = (req, res) => {
 };
 
 export const getUser = (req, res) => {
-  return User.findOne({ email: `${req.params.did}@dartmouth.edu` })
+  return User.findOne({ _id: req.params.id })
     // eslint-disable-next-line consistent-return
     .then((user) => {
       return res.json({ message: user });
@@ -99,8 +106,48 @@ export const getUser = (req, res) => {
     });
 };
 
+export const getRiskScore = (req, res) => {
+  return User.findOne({ _id: req.params.id })
+    // eslint-disable-next-line consistent-return
+    .then((user) => {
+      // calculate risk score
+      const risk = riskScorer(user);
+      return res.json({ message: risk });
+    })
+    .catch((error) => {
+      return res.status(500).send({ error });
+    });
+};
+
+export const getNumContactsCovidPositive = (req, res) => {
+  return User.findOne({ _id: req.params.id })
+  // eslint-disable-next-line consistent-return
+    .then((user) => {
+    // calculate risk score
+      const numContacts = user.messages.length;
+      return res.json({ message: numContacts });
+    })
+    .catch((error) => {
+      return res.status(500).send({ error });
+    });
+};
+
+export const getNumSymptoms = (req, res) => {
+  return User.findOne({ _id: req.params.id })
+  // eslint-disable-next-line consistent-return
+    .then((user) => {
+    // calculate risk score
+      const numSymptoms = user.symptoms.length;
+      return res.json({ message: numSymptoms });
+    })
+    .catch((error) => {
+      return res.status(500).send({ error });
+    });
+};
+
+
 export const addMessage = (req, res) => {
-  return User.findOne({ email: `${req.params.did}@dartmouth.edu` })
+  return User.findOne({ _id: req.params.id })
     // eslint-disable-next-line consistent-return
     .then((user) => {
       const newMessage = {
@@ -108,8 +155,9 @@ export const addMessage = (req, res) => {
         covid: req.body.covid,
         tested: req.body.tested,
         timestamp: moment().format(),
+        contactDate: req.body.contactDate,
       };
-      user.messages.append(newMessage);
+      user.messages.push(newMessage);
       user.save()
         .then((result) => {
           res.json(user);

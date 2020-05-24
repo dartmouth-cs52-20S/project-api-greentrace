@@ -9,6 +9,7 @@ const MessageSchema = new Schema({
   tested: { type: Boolean },
   covid: { type: Boolean },
   timestamp: { type: String },
+  contactDate: { type: String },
 });
 
 const UserSchema = new Schema({
@@ -26,9 +27,6 @@ const UserSchema = new Schema({
       ret.id = ret._id;
       delete ret._id;
       delete ret.password;
-      delete ret.tested;
-      delete ret.symptoms;
-      delete ret.hasCovid;
       delete ret.__v;
       return ret;
     },

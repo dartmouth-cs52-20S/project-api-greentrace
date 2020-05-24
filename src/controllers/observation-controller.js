@@ -2,12 +2,13 @@ import Observation from '../models/observation-model';
 
 export const addObservation = (req, res) => {
   const observation = new Observation();
-  // event.sourceUser = req.body.userID; // req.user;
+  observation.sourceUserID = req.body.sourceUserID;
   observation.location.type = 'Point';
   observation.location.coordinates = [req.body.longitude, req.body.latitude];
+  observation.dataCollectionTimestamp = req.body.dataCollectionTimestamp;
   observation.save()
     .then(((result) => {
-      // maybe return some sort of success indicator here
+      res.json({ message: 'added a location' });
     }))
     .catch((error) => {
       // we'll have implement some sort of more robust error-handling here
