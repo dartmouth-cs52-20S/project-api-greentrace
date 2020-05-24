@@ -1,24 +1,46 @@
-# Project Name
+# Greentrace server
 
 ![Team Photo](Insert a Team Photo URL here)
-[*how?*](https://help.github.com/articles/about-readmes/#relative-links-and-image-paths-in-readme-files)
 
-TODO: short project description, some sample screenshots or mockups
+The Greentrace server. Communicates with a Mongo database.
+
+API in the [wiki](https://github.com/dartmouth-cs52-20S/project-api-greentrace/wiki)
 
 ## Architecture
 
-TODO:  descriptions of code organization and tools and libraries used
+```
+.
+├── Procfile
+├── README.md
+├── package.json
+├── src
+│   ├── controllers
+│   │   ├── event-controller.js
+│   │   └── user-controller.js
+│   ├── models
+│   │   ├── event-model.js
+│   │   └── user-model.js
+│   ├── router.js
+│   ├── server.js
+│   └── services
+│       └── passport.js
+├── static
+│   └── style.css
+└── yarn.lock
+```
 
 ## Setup
 
-TODO: how to get the project dev environment up and running, npm install etc
+To fetch and download dependencies, run `yarn`
+
+To setup the server locally, run `yarn dev`
 
 ## Deployment
 
-TODO: how to deploy the project
+Deployed on [Heroku](https://greentrace-server.herokuapp.com/)
 
 ## Authors
 
-Samiha, Srishti, David, Hershel, Aditya, Zack
+Samiha Datta, Srishti Bagchi, David Kantor, Hershel Wathore, Aditya Choudhari, Zack Gottesman
 
 ## Acknowledgments
