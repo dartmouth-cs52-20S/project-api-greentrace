@@ -4,15 +4,7 @@
 
 The Greentrace server. Communicates with a Mongo database.
 
-#### GET /api/events
-
-- No parameters
-- Returns all latitude,longitude pairs that have been added
-
-#### POST /api/events
-
-- Parameters: An object with `longitude` and `latitude` fields (in that order). Values should be integers or floats.
-- Doesn't return anything
+API in the [wiki](https://github.com/dartmouth-cs52-20S/project-api-greentrace/wiki)
 
 ## Architecture
 
@@ -39,9 +31,9 @@ The Greentrace server. Communicates with a Mongo database.
 
 ## Setup
 
-To fetch dependencies, run `yarn`
+To fetch and download dependencies, run `yarn`
 
-To run the server locally, run `yarn dev`
+To setup the server locally, run `yarn dev`
 
 ## Deployment
 

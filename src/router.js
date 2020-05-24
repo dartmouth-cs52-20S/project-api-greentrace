@@ -12,10 +12,10 @@ router.get('/', (req, res) => {
 
 
 router.route('/location')
-  .post(Observations.addEvent)
+  .post(Observations.addObservation)
   .get(Observations.printWelcome);
 
-router.route('/user/')
+router.route('/user/:did')
   .put(User.updateUser)
   .get(User.getMessages);
 

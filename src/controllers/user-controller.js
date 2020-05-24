@@ -52,7 +52,7 @@ export const signup = (req, res, next) => {
 };
 
 export const updateUser = (req, res) => {
-  return User.findOne({ email: req.body.email })
+  return User.findOne({ email: `${req.params.did}@dartmouth.edu` })
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if ('tested' in req.body) {
@@ -64,6 +64,13 @@ export const updateUser = (req, res) => {
       if ('symptoms' in req.body) {
         user.symptoms = req.body.symptoms;
       }
+      user.save()
+        .then((result) => {
+          res.json(user);
+        })
+        .catch((error) => {
+          res.status(500).json({ error });
+        });
     })
     .catch((error) => {
       return res.status(500).send({ error });
@@ -71,10 +78,10 @@ export const updateUser = (req, res) => {
 };
 
 export const getMessages = (req, res) => {
-  return User.findOne({ email: req.body.email })
+  return User.findOne({ email: `${req.params.did}@dartmouth.edu` })
     // eslint-disable-next-line consistent-return
     .then((user) => {
-      return user.messages;
+      return res.json({ message: user.messages });
     })
     .catch((error) => {
       return res.status(500).send({ error });
@@ -82,7 +89,7 @@ export const getMessages = (req, res) => {
 };
 
 export const addMessage = (req, res) => {
-  return User.findOne({ email: req.body.email })
+  return User.findOne({ email: `${req.params.did}@dartmouth.edu` })
     // eslint-disable-next-line consistent-return
     .then((user) => {
       const newMessage = {
@@ -92,6 +99,13 @@ export const addMessage = (req, res) => {
         timestamp: moment().format(),
       };
       user.messages.append(newMessage);
+      user.save()
+        .then((result) => {
+          res.json(user);
+        })
+        .catch((error) => {
+          res.status(500).json({ error });
+        });
     })
     .catch((error) => {
       return res.status(500).send({ error });

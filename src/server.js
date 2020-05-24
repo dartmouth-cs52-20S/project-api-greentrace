@@ -45,14 +45,14 @@ app.get('/', (req, res) => {
 });
 
 app.post('/location', (req, res) => {
-  Observations.addEvent(req, res);
+  Observations.addObservation(req, res);
 });
 
-app.put('/user/:id', (req, res) => {
+app.put('/user/:did', (req, res) => {
   User.updateUser(req, res);
 });
 
-app.get('/user/:id/', (req, res) => {
+app.get('/user/:did/', (req, res) => {
   User.getMessages(req, res);
 });
 

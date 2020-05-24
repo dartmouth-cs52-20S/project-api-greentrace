@@ -1,6 +1,6 @@
 import Observation from '../models/observation-model';
 
-export const addEvent = (req, res) => {
+export const addObservation = (req, res) => {
   const observation = new Observation();
   // event.sourceUser = req.body.userID; // req.user;
   observation.location.type = 'Point';
