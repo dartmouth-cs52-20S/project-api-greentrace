@@ -147,11 +147,9 @@ export const getNumSymptoms = (req, res) => {
 
 
 export const addMessage = (req, res) => {
-  console.log('about to find');
   return User.findOne({ _id: req.params.id })
     // eslint-disable-next-line consistent-return
     .then((user) => {
-      console.log('found user');
       const newMessage = {
         traceID: req.body.traceID,
         covid: req.body.covid,
@@ -159,21 +157,16 @@ export const addMessage = (req, res) => {
         timestamp: moment().format(),
         contactDate: req.body.contactDate,
       };
-      console.log('about to append new message');
       user.messages.push(newMessage);
-      console.log('successfully appended message');
       user.save()
         .then((result) => {
-          console.log('saved message to user');
           res.json(user);
         })
         .catch((error) => {
-          console.log('couldnt save');
           res.status(500).json({ error });
         });
     })
     .catch((error) => {
-      console.log('couldnt find');
       return res.status(500).send({ error });
     });
 };
