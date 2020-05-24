@@ -29,7 +29,8 @@ router.route('/user/:id/numcontacts')
   .get(User.getNumContactsCovidPositive);
 
 router.route('/user/:id/messages')
-  .get(User.getMessages);
+  .get(User.getMessages)
+  .post(User.addMessage);
 
 router.post('/signin', User.signin); // add requireSignin here, requireAuth elsewhere
 
