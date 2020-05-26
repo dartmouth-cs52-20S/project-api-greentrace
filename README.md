@@ -1,6 +1,6 @@
 # Greentrace server
 
-![Team Photo](Insert a Team Photo URL here)
+![Team Photo](https://raw.githubusercontent.com/dartmouth-cs52-20S/project-greentrace/master/selfie.png?token=AMMHK67VCIRS264KTSYFM5K62Z46S)
 
 The Greentrace server. Communicates with a Mongo database.
 
