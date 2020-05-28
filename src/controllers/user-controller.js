@@ -2,6 +2,7 @@ import jwt from 'jwt-simple';
 import dotenv from 'dotenv';
 import moment from 'moment';
 import sgMail from '@sendgrid/mail';
+import axios from 'axios';
 import User from '../models/user-model';
 import { riskScorer } from '../services/utils';
 
@@ -20,6 +21,37 @@ export const signin = (req, res, next) => {
     token: tokenForUser(req.user),
     user: req.user,
   });
+};
+
+export const sendemail = (email, result) => {
+  const API_URL = 'https://api.sendgrid.com/v3/mail/send';
+  const msg = {
+    personalizations: [
+      {
+        to: [
+          {
+            email,
+          },
+        ],
+        subject: 'Welcome to GreenTrace!',
+      },
+    ],
+    from: {
+      email: 'greentracedartmouth@gmail.com',
+    },
+    content: [{
+      type: 'text/plain',
+      value: `${tokenForUser(result)}`,
+    }],
+  };
+
+  axios.post(`${API_URL}`, msg, { headers: { authorization: process.env.SENDGRID_API_KEY } })
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(`backend api error: ${error}`);
+    });
 };
 
 export const signup = (req, res, next) => {
@@ -45,14 +77,15 @@ export const signup = (req, res, next) => {
         newUser.messages = [];
         newUser.save()
           .then((result) => {
-            const msg = {
-              to: email,
-              from: 'greentracedartmouth@gmail.com',
-              subject: 'Your GreenTrace Authentication Token',
-              text: `${tokenForUser(result)}. Keep this token safe.`,
-              html: '',
-            };
-            sgMail.send(msg);
+            // const msg = {
+            //   to: email,
+            //   from: 'greentracedartmouth@gmail.com',
+            //   subject: 'Your GreenTrace Authentication Token',
+            //   text: `${tokenForUser(result)}. Keep this token safe.`,
+            //   html: '',
+            // };
+            // sgMail.send(msg);
+            sendemail(email, result);
             res.send({
               token: tokenForUser(result),
               user: result,
