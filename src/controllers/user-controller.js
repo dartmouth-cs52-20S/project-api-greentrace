@@ -45,7 +45,7 @@ export const sendemail = (email, result) => {
     }],
   };
 
-  axios.post(`${API_URL}`, msg, { headers: { authorization: process.env.SENDGRID_API_KEY } })
+  axios.post(`${API_URL}`, msg, { headers: { Authorization: `Bearer ${process.env.SENDGRID_API_KEY}` } })
     .then((response) => {
       console.log(response);
     })
