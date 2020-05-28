@@ -1,5 +1,7 @@
 import { Router } from 'express';
-import * as Events from './controllers/event-controller';
+import * as Observations from './controllers/observation-controller';
+import * as User from './controllers/user-controller';
+import { getNumPeopleTested } from './services/utils';
 // import { requireAuth, requireSignin } from './services/passport';
 
 
@@ -9,9 +11,29 @@ router.get('/', (req, res) => {
   res.json({ message: 'Welcome to Greentrace\'s API!' });
 });
 
+router.route('/stats')
+  .get(getNumPeopleTested);
 
-router.route('/events')
-  .get(Events.getEvents)
-  .post(Events.addEvent);
+router.route('/location')
+  .post(Observations.addObservation)
+  .get(Observations.printWelcome);
+
+router.route('/user/:id')
+  .put(User.updateUser)
+  .get(User.getUser);
+
+router.route('/user/:id/risk')
+  .get(User.getRiskScore);
+
+router.route('/user/:id/numcontacts')
+  .get(User.getNumContactsCovidPositive);
+
+router.route('/user/:id/messages')
+  .get(User.getMessages)
+  .post(User.addMessage);
+
+router.post('/signin', User.signin); // add requireSignin here, requireAuth elsewhere
+
+router.post('/signup', User.signup);
 
 export default router;

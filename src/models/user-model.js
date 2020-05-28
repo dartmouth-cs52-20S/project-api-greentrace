@@ -2,12 +2,23 @@
 /* eslint-disable prefer-arrow-callback */
 /* eslint-disable func-names */
 import mongoose, { Schema } from 'mongoose';
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs';
+
+const MessageSchema = new Schema({
+  traceID: { type: String },
+  tested: { type: Boolean },
+  covid: { type: Boolean },
+  timestamp: { type: String },
+  contactDate: { type: String },
+});
 
 const UserSchema = new Schema({
   email: { type: String, unique: true, lowercase: true },
-  username: { type: String },
   password: { type: String },
+  tested: { type: Boolean },
+  covid: { type: Boolean },
+  symptoms: { type: Array },
+  messages: { type: [MessageSchema] },
 }, {
   toObject: { virtuals: true },
   toJSON: {
@@ -23,6 +34,7 @@ const UserSchema = new Schema({
   timestamps: true,
 });
 
+/*
 UserSchema.pre('save', function beforeUserSave(next) {
   const user = this;
   if (!user.isModified('password')) {
@@ -51,6 +63,7 @@ UserSchema.methods.comparePassword = function comparePassword(candidatePassword,
     callback(null, comparisonResult);
   });
 };
+*/
 
 const UserModel = mongoose.model('User', UserSchema);
 

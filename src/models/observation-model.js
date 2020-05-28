@@ -1,7 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 
-const PostSchema = new Schema({
-  // sourceUser: { type: Schema.Types.ObjectId, ref: 'User' },
+// from https://mongoosejs.com/docs/geojson.html
+
+const ObservationSchema = new Schema({
+  sourceUserID: { type: String }, // user._id
+  dataCollectionTimestamp: { type: String },
   location: {
     type: {
       type: String,
@@ -19,6 +22,6 @@ const PostSchema = new Schema({
   timestamps: true,
 });
 
-const EventModel = mongoose.model('Event', PostSchema);
+const EventModel = mongoose.model('Event', ObservationSchema);
 
 export default EventModel;

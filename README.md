@@ -1,18 +1,10 @@
 # Greentrace server
 
-![Team Photo](Insert a Team Photo URL here)
+![Team Photo](https://raw.githubusercontent.com/dartmouth-cs52-20S/project-greentrace/master/selfie.png?token=AMMHK67VCIRS264KTSYFM5K62Z46S)
 
 The Greentrace server. Communicates with a Mongo database.
 
-#### GET /api/events
-
-- No parameters
-- Returns all Event objects that have been added. For an Event instance, `event`, `event.location.coordinates` is an array that contains longitude at index 0 and latitude at index 1. 
-
-#### POST /api/events
-
-- Parameters: An object with `longitude` and `latitude` fields (in that order). Values should be integers or floats.
-- Doesn't return anything
+API in the [wiki](https://github.com/dartmouth-cs52-20S/project-api-greentrace/wiki)
 
 ## Architecture
 
@@ -39,9 +31,9 @@ The Greentrace server. Communicates with a Mongo database.
 
 ## Setup
 
-To fetch dependencies, run `yarn`
+To fetch and download dependencies, run `yarn`
 
-To run the server locally, run `yarn dev`
+To setup the server locally, run `yarn dev`
 
 ## Deployment
 
