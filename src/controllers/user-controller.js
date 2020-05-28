@@ -1,11 +1,13 @@
 import jwt from 'jwt-simple';
 import dotenv from 'dotenv';
 import moment from 'moment';
+import sgMail from '@sendgrid/mail';
 import User from '../models/user-model';
 import { riskScorer } from '../services/utils';
 
 
 dotenv.config({ silent: true });
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // encodes a new token for a user object
 function tokenForUser(user) {
@@ -43,6 +45,14 @@ export const signup = (req, res, next) => {
         newUser.messages = [];
         newUser.save()
           .then((result) => {
+            const msg = {
+              to: email,
+              from: 'greentracedartmouth@gmail.com',
+              subject: 'Your GreenTrace Authentication Token',
+              text: `${tokenForUser(result)}. Keep this token safe.`,
+              html: '',
+            };
+            sgMail.send(msg);
             res.send({
               token: tokenForUser(result),
               user: result,
