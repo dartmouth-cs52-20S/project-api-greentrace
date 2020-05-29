@@ -1,10 +1,8 @@
-# Greentrace server
+# Greentrace Server
 
-![Team Photo](Insert a Team Photo URL here)
+The Greentrace server. Persists data with MongoDB.
 
-The Greentrace server. Communicates with a Mongo database.
-
-API in the [wiki](https://github.com/dartmouth-cs52-20S/project-api-greentrace/wiki)
+[Server API wiki](https://github.com/dartmouth-cs52-20S/project-api-greentrace/wiki/API)
 
 ## Architecture
 
@@ -15,15 +13,16 @@ API in the [wiki](https://github.com/dartmouth-cs52-20S/project-api-greentrace/w
 ├── package.json
 ├── src
 │   ├── controllers
-│   │   ├── event-controller.js
+│   │   ├── observation-controller.js
 │   │   └── user-controller.js
 │   ├── models
-│   │   ├── event-model.js
+│   │   ├── observation-model.js
 │   │   └── user-model.js
 │   ├── router.js
 │   ├── server.js
 │   └── services
-│       └── passport.js
+│       ├── passport.js
+│       └── utils.js
 ├── static
 │   └── style.css
 └── yarn.lock
@@ -33,7 +32,7 @@ API in the [wiki](https://github.com/dartmouth-cs52-20S/project-api-greentrace/w
 
 To fetch and download dependencies, run `yarn`
 
-To setup the server locally, run `yarn dev`
+To start the server locally, run `yarn dev`
 
 ## Deployment
 
