@@ -73,6 +73,10 @@ app.get('/user/:id/messages', (req, res) => {
   User.getMessages(req, res);
 });
 
+app.post('/user/:id/messages', (req, res) => {
+  User.addMessage(req, res);
+});
+
 
 // START THE SERVER
 // =============================================================================

@@ -157,7 +157,7 @@ export const addMessage = (req, res) => {
         timestamp: moment().format(),
         contactDate: req.body.contactDate,
       };
-      user.messages.append(newMessage);
+      user.messages.push(newMessage);
       user.save()
         .then((result) => {
           res.json(user);
