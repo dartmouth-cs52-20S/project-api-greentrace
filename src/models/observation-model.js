@@ -5,6 +5,7 @@ import mongoose, { Schema } from 'mongoose';
 const ObservationSchema = new Schema({
   sourceUserID: { type: String }, // user._id
   dataCollectionTimestamp: { type: String },
+  dataExitTimestamp: { type: String },
   location: {
     type: {
       type: String,

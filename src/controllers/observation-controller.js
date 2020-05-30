@@ -1,4 +1,5 @@
 import Observation from '../models/observation-model';
+import Contact from '../models/contact-model';
 
 export const addObservation = (req, res) => {
   const observation = new Observation();
@@ -6,6 +7,7 @@ export const addObservation = (req, res) => {
   observation.location.type = 'Point';
   observation.location.coordinates = [req.body.longitude, req.body.latitude];
   observation.dataCollectionTimestamp = req.body.dataCollectionTimestamp;
+  observation.dataExitTimestamp = '';
   observation.save()
     .then(((result) => {
       res.json({ message: 'added a location' });
@@ -13,6 +15,30 @@ export const addObservation = (req, res) => {
     .catch((error) => {
       // we'll have implement some sort of more robust error-handling here
     });
+};
+
+const identifyContact = (req, res) => {
+// process the current location and determine all observations near the current location within x timeframe
+// if there are any results
+//    for each result
+//        if the fetched result has an end time create a one-way contact
+//            average the two locations and record the location difference
+//            record the current user as the secondary source
+//            record the other contact as the primary source
+//            record the current time as the initial point of contact
+//            record the end time initially as null
+//        else create a two-way contact
+}
+
+export const getDataTimestamp = (req, res) => {
+  return req.body.dataCollectionTimestamp;
+};
+
+export const getCoords = (req, res) => {
+  const { latitude } = req.body;
+  const { longitude } = req.body;
+  const location = [longitude, latitude];
+  return location;
 };
 
 // export const deleteObservation = (req, res) => {
