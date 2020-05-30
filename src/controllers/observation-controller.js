@@ -20,13 +20,14 @@ export const addObservation = (req, res) => {
 const identifyContact = (req, res) => {
 // process the current location and determine all observations near the current location within x timeframe
 // if there are any results
-//    for each result, create a new contact observation 
-          // if the results 
-//        average the two locations and record the location difference
-//        record the current user as the secondary source
-//        record the other contact as the primary source
-//        record the current time as the initial point of contact
-//        set the 
+//    for each result
+//        if the fetched result has an end time create a one-way contact
+//            average the two locations and record the location difference
+//            record the current user as the secondary source
+//            record the other contact as the primary source
+//            record the current time as the initial point of contact
+//            record the end time initially as null
+//        else create a two-way contact
 }
 
 export const getDataTimestamp = (req, res) => {
