@@ -4,8 +4,8 @@ import mongoose, { Schema } from 'mongoose';
 
 const ObservationSchema = new Schema({
   sourceUserID: { type: String }, // user._id
-  dataCollectionTimestamp: { type: String },
-  dataExitTimestamp: { type: String },
+  dataCollectionTimestamp: { type: Number },
+  dataExitTimestamp: { type: Number },
   location: {
     type: {
       type: String,
@@ -23,6 +23,7 @@ const ObservationSchema = new Schema({
   timestamps: true,
 });
 
+ObservationSchema.index({ location: '2dsphere' });
 const EventModel = mongoose.model('Event', ObservationSchema);
 
 export default EventModel;

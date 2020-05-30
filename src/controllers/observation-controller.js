@@ -1,13 +1,111 @@
 import Observation from '../models/observation-model';
 import Contact from '../models/contact-model';
 
+const setExitTimeStamp = (object, newTime, res) => {
+  object.dataExitTimeStamp = newTime;
+  object.save()
+    .then(((result) => {
+      res.json({ message: 'updated exit timestamp' });
+    }))
+    .catch((error) => {
+      res.json({ message: error });
+    });
+};
+
 export const addObservation = (req, res) => {
   const observation = new Observation();
+
+  const largeNumber = 8.64 * (10 ** 7);
+
+  Observation.find({ sourceUserID: req.body.sourceUserID })
+    .then((result) => {
+      if (result !== null) {
+        result.sort((a, b) => { return ((a.dataExitTimestamp < b.dataExitTimestamp) ? 1 : -1); });
+        const mostRecent = result[0];
+        setExitTimeStamp(mostRecent, req.body.dataCollectionTimestamp, result);
+      }
+    })
+    .catch((error) => {
+      console.log('Error! Oh no!', error);
+    });
+
+  // const gteTime = parseInt(req.body.dataCollectionTimestamp, 10) - largeNumber;
+  // const gteDate = new Date(gteTime);
+  // const gteDateString = gteDate.toISOString();
+  // const ltTime = parseInt(req.body.dateCollectionTimestamp, 10);
+  // const ltDate = newDate(ltTime);
+  // const ltDateString = ltDate.toISOString();
+  Observation.find({
+    $and: [{ location: { $near: { $geometry: { type: 'Point', coordinates: [req.body.longitude, req.body.latitude] }, $maxDistance: 2 } } }, {
+      dataCollectionTimestamp: { $gte: (req.body.dataCollectionTimestamp - largeNumber), $lt: (req.body.dataCollectionTimestamp) },
+    }],
+  }).then((result) => {
+    if (result.length !== 0) {
+      result.forEach((obs) => {
+        if (obs.dataExitTimestamp !== '') {
+          const newContact = new Contact();
+          const latAverage = Math.abs((obs.location.coordinates.latitude + req.body.latitude) / 2);
+          const longAverage = Math.abs((obs.location.coordinates.longitude + req.body.longitude) / 2);
+          const averageLocation = [longAverage, latAverage];
+          newContact.location = averageLocation;
+          newContact.contactedUser = req.body.sourceUserID;
+          newContact.primaryUser = obs.sourceUserID;
+          newContact.initialContactTime = req.body.dataCollectionTimestamp;
+          newContact.endContactTime = '';
+          newContact.save()
+            .then(((result2) => {
+              res.json({ message: 'added a contact' });
+            }))
+            .catch((error) => {
+              res.json({ message: error });
+            });
+        } else {
+          const newContact1 = new Contact();
+          const newContact2 = new Contact();
+
+          const latAverage = Math.abs((obs.location.coordinates.latitude + req.body.latitude) / 2);
+          const longAverage = Math.abs((obs.location.coordinates.longitude + req.body.longitude) / 2);
+          const averageLocation = [longAverage, latAverage];
+          newContact1.location = averageLocation;
+          newContact1.contactedUser = req.body.sourceUserID;
+          newContact1.primaryUser = obs.sourceUserID;
+          newContact1.initialContactTime = req.body.dataCollectionTimestamp;
+          newContact1.endContactTime = null;
+          newContact1.save()
+            .then(((result2) => {
+              res.json({ message: 'added a contact' });
+            }))
+            .catch((error) => {
+              res.json({ message: error });
+            });
+
+          newContact2.location = averageLocation;
+          newContact2.contactedUser = obs.sourceUserID;
+          newContact2.primaryUser = req.body.sourceUserID;
+          newContact2.initialContactTime = req.body.dataCollectionTimestamp;
+          newContact2.endContactTime = null;
+          newContact2.save()
+            .then(((result3) => {
+              res.json({ message: 'added a contact' });
+            }))
+            .catch((error) => {
+              res.json({ message: error });
+            });
+        }
+      });
+    }
+    console.log(result);
+  })
+    .catch((error) => {
+      console.log('error', error);
+    });
+
+
   observation.sourceUserID = req.body.sourceUserID;
   observation.location.type = 'Point';
   observation.location.coordinates = [req.body.longitude, req.body.latitude];
   observation.dataCollectionTimestamp = req.body.dataCollectionTimestamp;
-  observation.dataExitTimestamp = '';
+  observation.dataExitTimestamp = null;
   observation.save()
     .then(((result) => {
       res.json({ message: 'added a location' });
@@ -17,7 +115,7 @@ export const addObservation = (req, res) => {
     });
 };
 
-const identifyContact = (req, res) => {
+// const identifyContact = (observation) => {
 // process the current location and determine all observations near the current location within x timeframe
 // if there are any results
 //    for each result
@@ -37,30 +135,28 @@ const identifyContact = (req, res) => {
 //                                  when we update contactA, if it is a two way contact then
 //                                      query by switching primary and secondary (.find())
 //                                      if there's multiple, just get the one that has no end time, and update it's endtime
-};
+//   const largeNumber = 8.64 * (10 ** 7);
+//   Observation.find({ coordinates: { $near: [observation.location.longitude, observation.location.latitude], $maxDistance: 2 } }, {
+//     dataCollectionTimestamp: { $gte: new Date(parseInt(observation.dataCollectionTimestamp, 10) - largeNumber), $lt: new Date(parseInt(observation.dataCollectionTimestamp, 10)) },
+//   });
+// };
 
-const updateContact = (req, res) => {
-  // if there is a previous contact
-  // purpose: complete the previous contact with the current time as exit
-};
+// const updateContact = (req, res) => {
+//   // if there is a previous contact
+//   // purpose: complete the previous contact with the current time as exit
+// };
 
-const setExitTimeStamp = () => {
-  // if first entry
-  //     ignore
-  // else
-  //     update the last entry's endtime with the current time of the new observation
-};
 
-export const getDataTimestamp = (req, res) => {
-  return req.body.dataCollectionTimestamp;
-};
+// export const getDataTimestamp = (req, res) => {
+//   return req.body.dataCollectionTimestamp;
+// };
 
-export const getCoords = (req, res) => {
-  const { latitude } = req.body;
-  const { longitude } = req.body;
-  const location = [longitude, latitude];
-  return location;
-};
+// export const getCoords = (req, res) => {
+//   const { latitude } = req.body;
+//   const { longitude } = req.body;
+//   const location = [longitude, latitude];
+//   return location;
+// };
 
 // export const deleteObservation = (req, res) => {
 //   return Observation.find({/* old timestamp */})
