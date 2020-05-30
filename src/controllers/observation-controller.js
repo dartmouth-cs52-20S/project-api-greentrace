@@ -44,10 +44,11 @@ export const addObservation = (req, res) => {
       result.forEach((obs) => {
         if (obs.dataExitTimestamp !== '') {
           const newContact = new Contact();
-          const latAverage = Math.abs((obs.location.coordinates.latitude + req.body.latitude) / 2);
-          const longAverage = Math.abs((obs.location.coordinates.longitude + req.body.longitude) / 2);
+          const latAverage = Math.abs((obs.location.coordinates[1] + req.body.latitude) / 2);
+          const longAverage = Math.abs((obs.location.coordinates[0] + req.body.longitude) / 2);
           const averageLocation = [longAverage, latAverage];
-          newContact.location = averageLocation;
+          newContact.location.type = 'Point';
+          newContact.location.coordinates = averageLocation;
           newContact.contactedUser = req.body.sourceUserID;
           newContact.primaryUser = obs.sourceUserID;
           newContact.initialContactTime = req.body.dataCollectionTimestamp;
@@ -57,16 +58,19 @@ export const addObservation = (req, res) => {
               res.json({ message: 'added a contact' });
             }))
             .catch((error) => {
+              console.log('error at line 61');
+              console.log(error);
               res.json({ message: error });
             });
         } else {
           const newContact1 = new Contact();
           const newContact2 = new Contact();
 
-          const latAverage = Math.abs((obs.location.coordinates.latitude + req.body.latitude) / 2);
-          const longAverage = Math.abs((obs.location.coordinates.longitude + req.body.longitude) / 2);
+          const latAverage = Math.abs((obs.location.coordinates[1] + req.body.latitude) / 2);
+          const longAverage = Math.abs((obs.location.coordinates[0] + req.body.longitude) / 2);
           const averageLocation = [longAverage, latAverage];
-          newContact1.location = averageLocation;
+          newContact1.location.type = 'Point';
+          newContact1.location.coordinates = averageLocation;
           newContact1.contactedUser = req.body.sourceUserID;
           newContact1.primaryUser = obs.sourceUserID;
           newContact1.initialContactTime = req.body.dataCollectionTimestamp;
@@ -79,7 +83,8 @@ export const addObservation = (req, res) => {
               res.json({ message: error });
             });
 
-          newContact2.location = averageLocation;
+          newContact2.location.type = 'Point';
+          newContact2.location.coordinates = averageLocation;
           newContact2.contactedUser = obs.sourceUserID;
           newContact2.primaryUser = req.body.sourceUserID;
           newContact2.initialContactTime = req.body.dataCollectionTimestamp;
