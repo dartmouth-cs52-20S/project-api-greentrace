@@ -8,7 +8,7 @@ const MessageSchema = new Schema({
   traceID: { type: String },
   tested: { type: Boolean },
   covid: { type: Boolean },
-  timestamp: { type: String },
+  // timestamp: { type: String },
   contactDate: { type: String },
 });
 
