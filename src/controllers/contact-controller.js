@@ -28,5 +28,5 @@ export const addContact = (req, res) => {
 // };
 
 export const printWelcome = (req, res) => {
-  res.json({ message: 'You can GET locations here' });
+  res.json({ message: 'You can GET contacts here' });
 };

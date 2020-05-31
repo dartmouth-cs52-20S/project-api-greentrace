@@ -5,7 +5,7 @@ import mongoose, { Schema } from 'mongoose';
 // import bcrypt from 'bcryptjs';
 
 const MessageSchema = new Schema({
-  traceID: { type: String },
+  // traceID: { type: String },
   tested: { type: Boolean },
   covid: { type: Boolean },
   timestamp: { type: String },
