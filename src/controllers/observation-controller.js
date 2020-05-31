@@ -182,5 +182,5 @@ export const addObservation = (req, res) => {
 // };
 
 export const printWelcome = (req, res) => {
-  res.json({ message: 'You can GET locations here' });
+  res.json({ message: 'You can GET observations here' });
 };
