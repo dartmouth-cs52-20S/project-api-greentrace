@@ -51,21 +51,21 @@ export const addObservation = (req, res) => {
       console.log('Error! Oh no!', error);
     });
 
-    // update the previous contact's end time if applicable
-    Contact.find({contactedUser: req.body.sourceUserID})
-      .then((result) => {
-        if (result !== null){
-          result.sort((a,b) => {return ((a.dataExitTimestamp < b.dataExitTimestamp) ? 1 : -1) ; });
-          result.forEach((contact) => {
-            if (contact.endContactTime === null){
-              setEndContactTime(contact, req.body.dataCollectionTimestamp)
-            }
-          })
-        }
-      })
-      .catch((error) => {
-        console.log("Error in updating end contact time", error)
-      })
+  // update the previous contact's end time if applicable
+  Contact.find({ contactedUser: req.body.sourceUserID })
+    .then((result) => {
+      if (result !== null) {
+        result.sort((a, b) => { return ((a.dataExitTimestamp < b.dataExitTimestamp) ? 1 : -1); });
+        result.forEach((contact) => {
+          if (contact.endContactTime === null) {
+            setEndContactTime(contact, req.body.dataCollectionTimestamp);
+          }
+        });
+      }
+    })
+    .catch((error) => {
+      console.log('Error in updating end contact time', error);
+    });
 
   // identify all new contacts based on current location
   Observation.find({
@@ -96,8 +96,7 @@ export const addObservation = (req, res) => {
               console.log(error);
               res.json({ message: error });
             });
-        } else {
-          if (obs.sourceUserID !== req.body.sourceUserID){
+        } else if (obs.sourceUserID !== req.body.sourceUserID) {
           const newContact1 = new Contact();
           const newContact2 = new Contact();
 
@@ -131,7 +130,6 @@ export const addObservation = (req, res) => {
             .catch((error) => {
               res.json({ message: error });
             });
-          }
         }
       });
     }
@@ -184,5 +182,5 @@ export const addObservation = (req, res) => {
 // };
 
 export const printWelcome = (req, res) => {
-  res.json({ message: 'You can GET locations here' });
+  res.json({ message: 'You can GET observations here' });
 };

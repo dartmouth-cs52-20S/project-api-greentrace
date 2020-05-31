@@ -15,18 +15,6 @@ export const addContact = (req, res) => {
     });
 };
 
-// export const deleteObservation = (req, res) => {
-//   return Observation.find({/* old timestamp */})
-//     .then((post) => {
-//       post.remove()
-//         .then((result) => {
-//         })
-//         .catch((error) => {
-//           res.status(500).json({ error });
-//         });
-//     });
-// };
-
 export const printWelcome = (req, res) => {
-  res.json({ message: 'You can GET locations here' });
+  res.json({ message: 'You can GET contacts here' });
 };
