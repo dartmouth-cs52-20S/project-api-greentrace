@@ -77,8 +77,8 @@ export const addObservation = (req, res) => {
       result.forEach((obs) => {
         if (obs.dataExitTimestamp !== null && obs.sourceUserID !== req.body.sourceUserID) {
           const newContact = new Contact();
-          const latAverage = Math.abs((obs.location.coordinates[1] + req.body.latitude) / 2);
-          const longAverage = Math.abs((obs.location.coordinates[0] + req.body.longitude) / 2);
+          const latAverage = ((obs.location.coordinates[1] + req.body.latitude) / 2);
+          const longAverage = ((obs.location.coordinates[0] + req.body.longitude) / 2);
           const averageLocation = [longAverage, latAverage];
           newContact.location.type = 'Point';
           newContact.location.coordinates = averageLocation;
