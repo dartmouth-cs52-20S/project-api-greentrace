@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as Observations from './controllers/observation-controller';
 import * as User from './controllers/user-controller';
 import { getNumPeopleTested } from './services/utils';
-import { requireAuth, requireSignin } from './services/passport';
+import { requireSignin } from './services/passport';
 
 
 const router = Router();
@@ -15,7 +15,7 @@ router.route('/stats')
   .get(getNumPeopleTested);
 
 router.route('/heatmap')
-  .get(User.getHeatmap)
+  .get(User.getHeatmap);
 
 router.route('/location')
   .post(Observations.addObservation)
@@ -33,7 +33,7 @@ router.route('/user/:id/numcontacts')
 
 router.route('/user/:id/messages')
   .get(User.getMessages)
-  .post(User.addMessage);
+  .post(User.addMessage); // should remove this at some point
 
 router.post('/signin', requireSignin, User.signin); // add requireSignin here, requireAuth elsewhere
 

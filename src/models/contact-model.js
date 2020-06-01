@@ -26,6 +26,7 @@ const ContactSchema = new Schema({
   timestamps: true,
 });
 
+ContactSchema.index({ location: '2dsphere' });
 const ContactModel = mongoose.model('Contact', ContactSchema);
 
 export default ContactModel;

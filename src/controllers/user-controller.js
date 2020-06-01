@@ -1,3 +1,5 @@
+/* eslint-disable func-names */
+/* eslint-disable prefer-arrow-callback */
 import jwt from 'jwt-simple';
 import dotenv from 'dotenv';
 import moment from 'moment';
@@ -150,14 +152,14 @@ export const updateUser = (req, res) => {
       }
       if ('covid' in req.body) {
         user.covid = req.body.covid;
-        console.log(req.body.covid)
+        console.log(req.body.covid);
       }
       if ('symptoms' in req.body) {
         user.symptoms = req.body.symptoms;
       }
       user.save()
         .then((result) => {
-          if (result.covid) {
+          if (result.covid || result.tested) { // if covid positive, or has been tested (positive or negative)
             runTracing({
               sourceUserID: result._id,
               contactDate: new Date().getTime(),
@@ -242,31 +244,34 @@ export const getNumSymptoms = (req, res) => {
 export const getHeatmap = (req, res) => {
   User.find({ covid: true }).exec(function (err, users) {
     addAllLocations(users, function (err, locations) {
-      if (err){
-        return res.status(500).send({ err })
-      }
-      else
+      if (err) {
+        return res.status(500).send({ err });
+      } else {
         return res.json({ message: refactorlocations(locations) });
-    })
+      }
+    });
   });
-}
+};
+
 // if it is the first call set locations to empty array
 // if we have reached the end of users callback with locations array
 // else get first element in users array find all observations in this array and concat with current locations array
 // recurse with new locations array and users array of len-1
 function addAllLocations(users, callback, locations) {
   locations = locations || [];
-  if(users.length < 1){
+  if (users.length < 1) {
     callback(null, locations);
-  }
-  else {
-    var user = users.shift();
-    var cutoff = new Date();
-    cutoff.setDate(cutoff.getDate()-10);
-    //converts Date back to unix timestamp to compare
-    cutoff = cutoff.getTime()/1000
-    Observation.find({ sourceUserID: user.id, dataCollectionTimestamp: { $gte: cutoff }  }, function(err, userlocations){
-      if(err) return callback(err);
+  } else {
+    const user = users.shift();
+    let cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 10);
+    // converts Date back to unix timestamp to compare
+    cutoff = cutoff.getTime() / 1000;
+    // eslint-disable-next-line consistent-return
+    Observation.find({ sourceUserID: user.id, dataCollectionTimestamp: { $gte: cutoff } }, function (err, userlocations) {
+      if (err) {
+        return callback(err);
+      }
       locations = locations.concat(userlocations);
       addAllLocations(users, callback, locations);
     });
@@ -274,11 +279,12 @@ function addAllLocations(users, callback, locations) {
 }
 
 function refactorlocations(locations) {
-  var newlocations = [];
-  for(var i = 0; i < locations.length; i++){
+  const newlocations = [];
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < locations.length; i++) {
     const latitude = locations[i].location.coordinates[1];
     const longitude = locations[i].location.coordinates[0];
-    newlocations.push({latitude, longitude, weight: 1})
+    newlocations.push({ latitude, longitude, weight: 1 });
   }
   return newlocations;
 }
