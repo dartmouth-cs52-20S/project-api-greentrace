@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import * as Observations from './controllers/observation-controller';
 import * as User from './controllers/user-controller';
-import { getNumPeopleTested } from './services/utils';
+import * as Message from './controllers/message-controller';
+import { getNumPeopleTested, getHeatmap } from './services/utils';
 import { requireSignin } from './services/passport';
 
 
@@ -15,7 +16,7 @@ router.route('/stats')
   .get(getNumPeopleTested);
 
 router.route('/heatmap')
-  .get(User.getHeatmap);
+  .get(getHeatmap);
 
 router.route('/location')
   .post(Observations.addObservation)
@@ -32,8 +33,8 @@ router.route('/user/:id/numcontacts')
   .get(User.getNumContactsCovidPositive);
 
 router.route('/user/:id/messages')
-  .get(User.getMessages)
-  .post(User.addMessage); // should remove this at some point
+  .get(Message.getMessages)
+  .post(Message.addMessageAPI);
 
 router.post('/signin', requireSignin, User.signin); // add requireSignin here, requireAuth elsewhere
 

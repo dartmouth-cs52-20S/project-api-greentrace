@@ -2,9 +2,9 @@
 /* eslint-disable prefer-arrow-callback */
 import jwt from 'jwt-simple';
 import dotenv from 'dotenv';
-import moment from 'moment';
 import User from '../models/user-model';
-import { riskScorer } from '../services/utils';
+import { riskScorer, defaultSymptoms } from '../services/utils';
+import { addMessage } from './message-controller';
 import Contact from '../models/contact-model';
 import Observation from '../models/observation-model';
 
@@ -44,7 +44,7 @@ export const signup = (req, res, next) => {
         newUser.password = password;
         newUser.tested = false;
         newUser.covid = false;
-        newUser.symptoms = [];
+        newUser.symptoms = defaultSymptoms;
         newUser.messages = [];
         newUser.save()
           .then((result) => {
@@ -63,32 +63,7 @@ export const signup = (req, res, next) => {
     });
 };
 
-export const addMessage = (req, res) => {
-  return User.findOne({ _id: req.params.id })
-    // eslint-disable-next-line consistent-return
-    .then((user) => {
-      const newMessage = {
-        // traceID: req.body.traceID,
-        covid: req.body.covid,
-        tested: req.body.tested,
-        timestamp: moment().format(),
-        contactDate: req.body.contactDate,
-      };
-      user.messages.push(newMessage);
-      user.save()
-        .then((result) => {
-          res.json(user);
-        })
-        .catch((error) => {
-          res.status(500).json({ error });
-        });
-    })
-    .catch((error) => {
-      return res.status(500).send({ error });
-    });
-};
-
-export const runTracing = (req) => {
+export const runTracing = (req, res) => {
   /* Algorithm:
       User sends a health status indicating positive covid-19 test
       Server receives a health status indicating positive covid-19 test
@@ -102,11 +77,11 @@ export const runTracing = (req) => {
           If the user hasn't been notified already for this trace
             Notify this user and mark them notified */
 
-  const twoWeeksAgo = (1.2) * (10 ** 9); // two weeks back in milliseconds
+  const twoWeeks = (1.2) * (10 ** 9); // two weeks back in milliseconds
   Contact.find({
     $and: [{ primaryUser: req.sourceUserID }, {
-      initalContactTimestamp: {
-        $gte: (req.contactDate - twoWeeksAgo),
+      initalContactTime: {
+        $gte: (req.contactDate - twoWeeks),
         $lt: (req.contactDate),
       },
     }],
@@ -124,8 +99,9 @@ export const runTracing = (req) => {
                     // traceID: counter,
                     covid: req.covid,
                     tested: req.tested,
-                    contactDate: req.contactDate,
-                  });
+                    contactDate: contact.initalContactTime,
+                    userID: contactedUser,
+                  }, res);
                   // counter += 1;
                   console.log('contacted user NOTIFICATION:', contactedUser);
                 }
@@ -147,42 +123,39 @@ export const updateUser = (req, res) => {
   return User.findOne({ _id: req.params.id })
     // eslint-disable-next-line consistent-return
     .then((user) => {
+      let covidStatusChanged = false;
+      // let testingStatusChange = false;
       if ('tested' in req.body) {
+        // if (user.tested !== req.body.tested) {
+        //   testingStatusChange = true;
+        // }
         user.tested = req.body.tested;
       }
       if ('covid' in req.body) {
+        if (user.covid !== req.body.covid) {
+          covidStatusChanged = true;
+        }
         user.covid = req.body.covid;
-        console.log(req.body.covid);
       }
       if ('symptoms' in req.body) {
         user.symptoms = req.body.symptoms;
       }
       user.save()
         .then((result) => {
-          if (result.covid || result.tested) { // if covid positive, or has been tested (positive or negative)
+          // if newly covid positive
+          if ((result.covid && covidStatusChanged)) {
             runTracing({
               sourceUserID: result._id,
               contactDate: new Date().getTime(),
               covid: result.covid,
               tested: result.tested,
-            });
+            }, res);
           }
-          res.json(user);
+          res.json(result);
         })
         .catch((error) => {
           res.status(500).json({ error });
         });
-    })
-    .catch((error) => {
-      return res.status(500).send({ error });
-    });
-};
-
-export const getMessages = (req, res) => {
-  return User.findOne({ _id: req.params.id })
-    // eslint-disable-next-line consistent-return
-    .then((user) => {
-      return res.json({ message: user.messages });
     })
     .catch((error) => {
       return res.status(500).send({ error });
@@ -228,10 +201,13 @@ export const getNumContactsCovidPositive = (req, res) => {
 
 export const getNumSymptoms = (req, res) => {
   return User.findOne({ _id: req.params.id })
-    // eslint-disable-next-line consistent-return
     .then((user) => {
-      // calculate risk score
-      const numSymptoms = user.symptoms.length;
+      let numSymptoms = 0;
+      Object.keys(user.symptoms).forEach((symptom) => {
+        if (user.symptoms[symptom]) {
+          numSymptoms += 1;
+        }
+      });
       return res.json({ message: numSymptoms });
     })
     .catch((error) => {

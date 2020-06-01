@@ -4,21 +4,13 @@
 import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const MessageSchema = new Schema({
-  // traceID: { type: String },
-  tested: { type: Boolean },
-  covid: { type: Boolean },
-  timestamp: { type: String },
-  contactDate: { type: String },
-});
-
 const UserSchema = new Schema({
   email: { type: String, unique: true, lowercase: true },
   password: { type: String },
   tested: { type: Boolean },
   covid: { type: Boolean },
   symptoms: { type: Object },
-  messages: { type: [MessageSchema] },
+  // messages: { type: [MessageSchema] },
 }, {
   toObject: { virtuals: true },
   toJSON: {

@@ -3,25 +3,25 @@ import Observation from '../models/observation-model';
 
 
 export const defaultSymptoms = {
-  'persistant cough': false,
-  'shortness of breath': false,
-  'has fever': false,
-  'has chills': false,
-  'muscle pain': false,
-  'sore throat': false,
-  'loss of taste': false,
-  'loss of smell': false,
+  persistantCough: false,
+  shortnessOfBreath: false,
+  hasFever: false,
+  hasChills: false,
+  musclePain: false,
+  soreThroat: false,
+  lossOfTaste: false,
+  lossOfSmell: false,
 };
 
 export const symptomScorer = {
-  'persistant cough': 1,
-  'shortness of breath': 1,
-  'has fever': 1,
-  'has chills': 1,
-  'muscle pain': 1,
-  'sore throat': 1,
-  'loss of taste': 1,
-  'loss of smell': 1,
+  persistantCough: 1,
+  shortnessOfBreath: 1,
+  hasFever: 1,
+  hasChills: 1,
+  musclePain: 1,
+  soreThroat: 1,
+  lossOfTaste: 1,
+  lossOfSmell: 1,
 };
 
 export const riskScorer = (user) => {
@@ -48,7 +48,6 @@ export const getNumPeopleTested = (req, res) => {
 
 
 // below is all the heatmap code from user-controller.js, but updated with es6 syntax
-// not yet tested as of 6/1/20
 
 // if it is the first call set locations to empty array
 // if we have reached the end of users callback with locations array
