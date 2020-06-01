@@ -14,6 +14,9 @@ router.get('/', (req, res) => {
 router.route('/stats')
   .get(getNumPeopleTested);
 
+router.route('/heatmap')
+  .get(User.getHeatmap)
+
 router.route('/location')
   .post(Observations.addObservation)
   .get(Observations.printWelcome);
