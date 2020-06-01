@@ -2,7 +2,7 @@
 /* eslint-disable prefer-arrow-callback */
 /* eslint-disable func-names */
 import mongoose, { Schema } from 'mongoose';
-// import bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 
 const MessageSchema = new Schema({
   traceID: { type: String },
@@ -34,13 +34,11 @@ const UserSchema = new Schema({
   timestamps: true,
 });
 
-/*
 UserSchema.pre('save', function beforeUserSave(next) {
   const user = this;
   if (!user.isModified('password')) {
     return next();
   }
-
   bcrypt.genSalt(10, function (err, salt) {
     if (err) {
       return next(err);
@@ -50,6 +48,7 @@ UserSchema.pre('save', function beforeUserSave(next) {
         return next(err);
       }
       user.password = hash;
+      console.log(hash);
       return next();
     });
   });
@@ -63,7 +62,6 @@ UserSchema.methods.comparePassword = function comparePassword(candidatePassword,
     callback(null, comparisonResult);
   });
 };
-*/
 
 const UserModel = mongoose.model('User', UserSchema);
 
