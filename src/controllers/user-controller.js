@@ -4,6 +4,7 @@ import moment from 'moment';
 import User from '../models/user-model';
 import { riskScorer } from '../services/utils';
 import Contact from '../models/contact-model';
+import Observation from '../models/observation-model';
 
 // let counter = 0;
 
@@ -86,18 +87,18 @@ export const addMessage = (req, res) => {
 };
 
 export const runTracing = (req) => {
-/* Algorithm:
-    User sends a health status indicating positive covid-19 test
-    Server receives a health status indicating positive covid-19 test
-    Server starts the contact-tracing protocol:
-    Assign this trace an ID
-    Get all observation instances on file for the infected user
-    For each observation:
-      Get all userID of users who were near this observation's location and around this observation's timestamp
-      For each userID:
-        Get the user associated with the userID
-        If the user hasn't been notified already for this trace
-          Notify this user and mark them notified */
+  /* Algorithm:
+      User sends a health status indicating positive covid-19 test
+      Server receives a health status indicating positive covid-19 test
+      Server starts the contact-tracing protocol:
+      Assign this trace an ID
+      Get all observation instances on file for the infected user
+      For each observation:
+        Get all userID of users who were near this observation's location and around this observation's timestamp
+        For each userID:
+          Get the user associated with the userID
+          If the user hasn't been notified already for this trace
+            Notify this user and mark them notified */
 
   const twoWeeksAgo = (1.2) * (10 ** 9); // two weeks back in milliseconds
   Contact.find({
@@ -149,6 +150,7 @@ export const updateUser = (req, res) => {
       }
       if ('covid' in req.body) {
         user.covid = req.body.covid;
+        console.log(req.body.covid)
       }
       if ('symptoms' in req.body) {
         user.symptoms = req.body.symptoms;
@@ -211,9 +213,9 @@ export const getRiskScore = (req, res) => {
 
 export const getNumContactsCovidPositive = (req, res) => {
   return User.findOne({ _id: req.params.id })
-  // eslint-disable-next-line consistent-return
+    // eslint-disable-next-line consistent-return
     .then((user) => {
-    // calculate risk score
+      // calculate risk score
       const numContacts = user.messages.length;
       return res.json({ message: numContacts });
     })
@@ -224,9 +226,9 @@ export const getNumContactsCovidPositive = (req, res) => {
 
 export const getNumSymptoms = (req, res) => {
   return User.findOne({ _id: req.params.id })
-  // eslint-disable-next-line consistent-return
+    // eslint-disable-next-line consistent-return
     .then((user) => {
-    // calculate risk score
+      // calculate risk score
       const numSymptoms = user.symptoms.length;
       return res.json({ message: numSymptoms });
     })
@@ -234,3 +236,49 @@ export const getNumSymptoms = (req, res) => {
       return res.status(500).send({ error });
     });
 };
+
+// Find all users that have tested positive
+// call addAllLocations with users found
+export const getHeatmap = (req, res) => {
+  User.find({ covid: true }).exec(function (err, users) {
+    addAllLocations(users, function (err, locations) {
+      if (err){
+        return res.status(500).send({ err })
+      }
+      else
+        return res.json({ message: refactorlocations(locations) });
+    })
+  });
+}
+// if it is the first call set locations to empty array
+// if we have reached the end of users callback with locations array
+// else get first element in users array find all observations in this array and concat with current locations array
+// recurse with new locations array and users array of len-1
+function addAllLocations(users, callback, locations) {
+  locations = locations || [];
+  if(users.length < 1){
+    callback(null, locations);
+  }
+  else {
+    var user = users.shift();
+    var cutoff = new Date();
+    cutoff.setDate(cutoff.getDate()-10);
+    //converts Date back to unix timestamp to compare
+    cutoff = cutoff.getTime()/1000
+    Observation.find({ sourceUserID: user.id, dataCollectionTimestamp: { $gte: cutoff }  }, function(err, userlocations){
+      if(err) return callback(err);
+      locations = locations.concat(userlocations);
+      addAllLocations(users, callback, locations);
+    });
+  }
+}
+
+function refactorlocations(locations) {
+  var newlocations = [];
+  for(var i = 0; i < locations.length; i++){
+    const latitude = locations[i].location.coordinates[1];
+    const longitude = locations[i].location.coordinates[0];
+    newlocations.push({latitude, longitude, weight: 1})
+  }
+  return newlocations;
+}
