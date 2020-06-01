@@ -35,7 +35,7 @@ export const addObservation = (req, res) => {
   const observation = new Observation();
 
   // one hour in milliseconds (will be used to establish the time frame for a contact)
-  const largeNumber = 8.64 * (10 ** 7);
+  const largeNumber = 3.6 * (10 ** 6);
 
   // update previous observation's end time if applicable
 
@@ -75,7 +75,7 @@ export const addObservation = (req, res) => {
   }).then((result) => {
     if (result!== null && result.length !== 0) {
       result.forEach((obs) => {
-        if (obs.dataExitTimestamp !== '' && obs.sourceUserID !== req.body.sourceUserID) {
+        if (obs.dataExitTimestamp !== null && obs.sourceUserID !== req.body.sourceUserID) {
           const newContact = new Contact();
           const latAverage = Math.abs((obs.location.coordinates[1] + req.body.latitude) / 2);
           const longAverage = Math.abs((obs.location.coordinates[0] + req.body.longitude) / 2);
@@ -85,7 +85,7 @@ export const addObservation = (req, res) => {
           newContact.contactedUser = req.body.sourceUserID;
           newContact.primaryUser = obs.sourceUserID;
           newContact.initialContactTime = req.body.dataCollectionTimestamp;
-          newContact.endContactTime = '';
+          newContact.endContactTime = null;
           newContact.save()
             .then(((result2) => {
               // res.json({ message: 'added a contact' });
@@ -97,6 +97,7 @@ export const addObservation = (req, res) => {
               res.json({ message: error });
             });
         } else if (obs.sourceUserID !== req.body.sourceUserID) {
+          console.log("HELLLLLLLLLOOOOOOO")
           const newContact1 = new Contact();
           const newContact2 = new Contact();
 
@@ -111,21 +112,19 @@ export const addObservation = (req, res) => {
           newContact1.endContactTime = null;
           newContact1.save()
             .then(((result2) => {
-              res.json({ message: 'added a contact' });
-            }))
-            .catch((error) => {
-              res.json({ message: error });
-            });
-
-          newContact2.location.type = 'Point';
-          newContact2.location.coordinates = averageLocation;
-          newContact2.contactedUser = obs.sourceUserID;
-          newContact2.primaryUser = req.body.sourceUserID;
-          newContact2.initialContactTime = req.body.dataCollectionTimestamp;
-          newContact2.endContactTime = null;
-          newContact2.save()
-            .then(((result3) => {
-              res.json({ message: 'added a contact' });
+              newContact2.location.type = 'Point';
+              newContact2.location.coordinates = averageLocation;
+              newContact2.contactedUser = obs.sourceUserID;
+              newContact2.primaryUser = req.body.sourceUserID;
+              newContact2.initialContactTime = req.body.dataCollectionTimestamp;
+              newContact2.endContactTime = null;
+              newContact2.save()
+                .then(((result3) => {
+                  res.json({ message: 'added a contact' });
+                }))
+                .catch((error) => {
+                  res.json({ message: error });
+                });
             }))
             .catch((error) => {
               res.json({ message: error });

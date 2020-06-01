@@ -99,7 +99,7 @@ export const runTracing = (req) => {
         If the user hasn't been notified already for this trace
           Notify this user and mark them notified */
 
-  const twoWeeksAgo = (1.2) * (10 ** 9); // two weeks back in milliseconds
+  const twoWeeksAgo = (1.2096) * (10 ** 9); // two weeks back in milliseconds
   Contact.find({
     $and: [{ primaryUser: req.sourceUserID }, {
       initalContactTimestamp: {
