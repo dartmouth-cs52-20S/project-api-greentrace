@@ -27,7 +27,14 @@ export const symptomScorer = {
 export const riskScorer = (user) => {
   if (user.covid && user.tested) { // if tested positive for covid19
     return 1;
-  } else if (user.symptoms.length >= 4 || user.messages.length >= 4) { // if user has symptoms or has enough messages
+  }
+  let numSymptoms = 0;
+  Object.keys(user.symptoms).forEach((symptom) => {
+    if (user.symptoms[symptom]) {
+      numSymptoms += 1;
+    }
+  });
+  if (numSymptoms >= 4) { // if has enough symptoms
     return 2;
   } else {
     return 3;

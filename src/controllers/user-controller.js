@@ -81,8 +81,8 @@ export const runTracing = (req, res) => {
   Contact.find({
     $and: [{ primaryUser: req.sourceUserID }, {
       initalContactTime: {
-        $gte: (req.contactDate - twoWeeks),
-        $lt: (req.contactDate),
+        $gte: (req.date - twoWeeks),
+        $lt: (req.date),
       },
     }],
   })
@@ -146,7 +146,7 @@ export const updateUser = (req, res) => {
           if ((result.covid && covidStatusChanged)) {
             runTracing({
               sourceUserID: result._id,
-              contactDate: new Date().getTime(),
+              date: new Date().getTime(),
               covid: result.covid,
               tested: result.tested,
             }, res);
