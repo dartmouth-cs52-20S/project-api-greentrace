@@ -36,11 +36,12 @@ const setEndContactTime = (contact, newTime, res) => {
 export const addObservation = (req, res) => {
 
   // update previous observation's end time if applicable
-
+  console.log('observation body', req.body);
   Observation.find({ sourceUserID: req.body.sourceUserID })
     .then((result) => {
       if (result !== null) {
-        result.sort((a, b) => { return ((a.dataExitTimestamp < b.dataExitTimestamp) ? 1 : -1); });
+        console.log('TRYING TO DEBUG setExitTimeStamp')
+        result.sort((a, b) => { return ((a.dataExitTimestamp > b.dataExitTimestamp) ? 1 : -1); });
         const mostRecent = result[0];
         setExitTimeStamp(mostRecent, req.body.dataCollectionTimestamp, res);
       }
@@ -80,6 +81,7 @@ export const addObservation = (req, res) => {
   }).then((result) => {
     if (result!== null && result.length !== 0) {
       result.forEach((obs) => {
+        console.log('Hello, this is obs', obs);
         if (obs.dataExitTimestamp !== null && obs.sourceUserID !== req.body.sourceUserID) {
           const newContact = new Contact();
           const latAverage = ((obs.location.coordinates[1] + req.body.latitude) / 2);
@@ -101,7 +103,7 @@ export const addObservation = (req, res) => {
               // res.status(500).send({ error });
             });
         } else if (obs.sourceUserID !== req.body.sourceUserID) {
-          console.log("HELLLLLLLLLOOOOOOO")
+          console.log("HELLLLLLLLLOOOOOOO");
           const newContact1 = new Contact();
           const newContact2 = new Contact();
           const longAverage = Math.abs((obs.location.coordinates[0] + req.body.longitude) / 2);
@@ -109,6 +111,7 @@ export const addObservation = (req, res) => {
           const averageLocation = [longAverage, latAverage];
           newContact1.location.type = 'Point';
           newContact1.location.coordinates = averageLocation;
+          console.log('req.body here', req.body);
           newContact1.contactedUser = req.body.sourceUserID;
           newContact1.primaryUser = obs.sourceUserID;
           newContact1.initialContactTime = req.body.dataCollectionTimestamp;
