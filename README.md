@@ -1,6 +1,6 @@
 # Greentrace Server
 
-![Team Photo](https://raw.githubusercontent.com/dartmouth-cs52-20S/project-greentrace/master/selfie.png?token=AMMHK67VCIRS264KTSYFM5K62Z46S)
+![Team Photo](selfie.png)
 
 The backend for [Greentrace](https://github.com/dartmouth-cs52-20S/project-greentrace), a contact-tracing application designed for Darmtouth College. Built with [node.js](https://nodejs.org/en/), [express](https://expressjs.com/), and a [MongoDB](https://www.mongodb.com/) database.
 
