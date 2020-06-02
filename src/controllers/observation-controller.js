@@ -6,12 +6,13 @@ const setExitTimeStamp = (observation, newTime, res) => {
   observation.dataExitTimestamp = newTime;
   observation.save()
     .then(((result) => {
-      res.json({ message: 'updated exit timestamp' });
-      // console.log('updated exit timestamp');
+      // res.json({ message: 'updated exit timestamp' });
+      console.log('updated exit timestamp');
     }))
     .catch((error) => {
-      return res.status(500).send({ error });
-      // console.log('Error in setting exit time stamp:', error);
+      console.log('error line 13');
+      // return res.status(500).send({ error });
+      console.log('Error in setting exit time stamp:', error);
     });
 };
 
@@ -22,12 +23,13 @@ const setEndContactTime = (contact, newTime, res) => {
   contact.duration = duration;
   contact.save()
     .then(((result) => {
-      res.json({ message: 'updated exit timestamp' });
-      // console.log('updated contact timestamp');
+      // res.json({ message: 'updated exit timestamp' });
+      console.log('updated contact timestamp');
     }))
     .catch((error) => {
-      return res.status(500).send({ error });
-      // console.log('Error in setting end contact time:', error);
+      console.log('error line 30');
+      // return res.status(500).send({ error });
+      console.log('Error in setting end contact time:', error);
     });
 };
 
@@ -44,7 +46,8 @@ export const addObservation = (req, res) => {
       }
     })
     .catch((error) => {
-      return res.status(500).send({ error });
+      console.log('error line 49');
+      // return res.status(500).send({ error });
     });
 
   // update the previous contact's end time if applicable
@@ -61,7 +64,8 @@ export const addObservation = (req, res) => {
       }
     })
     .catch((error) => {
-      return res.status(500).send({ error });
+      console.log('error line 67');
+      // return res.status(500).send({ error });
     });
 
   // identify all new contacts based on current location
@@ -93,7 +97,8 @@ export const addObservation = (req, res) => {
               console.log('added contact');
             }))
             .catch((error) => {
-              res.status(500).send({ error });
+              console.log('error line 100');
+              // res.status(500).send({ error });
             });
         } else if (obs.sourceUserID !== req.body.sourceUserID) {
           console.log("HELLLLLLLLLOOOOOOO")
@@ -118,14 +123,17 @@ export const addObservation = (req, res) => {
               newContact2.endContactTime = null;
               newContact2.save()
                 .then(((result3) => {
-                  res.json({ message: 'added a contact' });
+                  // res.json({ message: 'added a contact' });
+                  console.log('added contact');
                 }))
                 .catch((error) => {
-                  res.json({ message: error });
+                  // res.json({ message: error });
+                  console.log('error line 131', error);
                 });
             }))
             .catch((error) => {
-              return res.status(500).send({ error });
+              console.log('error line 133');
+              // return res.status(500).send({ error });
             });
         }
       });
@@ -133,7 +141,8 @@ export const addObservation = (req, res) => {
     // console.log(result);
   })
     .catch((error) => {
-      return res.status(500).send({ error });
+      console.log('error line 142');
+      // return res.status(500).send({ error });
     });
 
   // add the new observation
@@ -149,7 +158,8 @@ export const addObservation = (req, res) => {
       res.json({ message: 'added a location' });
     }))
     .catch((error) => {
-      return res.status(500).send({ error });
+      console.log('error line 159');
+      // return res.status(500).send({ error });
     });
 };
 
