@@ -2,23 +2,15 @@
 /* eslint-disable prefer-arrow-callback */
 /* eslint-disable func-names */
 import mongoose, { Schema } from 'mongoose';
-// import bcrypt from 'bcryptjs';
-
-const MessageSchema = new Schema({
-  // traceID: { type: String },
-  tested: { type: Boolean },
-  covid: { type: Boolean },
-  timestamp: { type: String },
-  contactDate: { type: String },
-});
+import bcrypt from 'bcryptjs';
 
 const UserSchema = new Schema({
   email: { type: String, unique: true, lowercase: true },
   password: { type: String },
   tested: { type: Boolean },
   covid: { type: Boolean },
-  symptoms: { type: Array },
-  messages: { type: [MessageSchema] },
+  symptoms: { type: Object },
+  // messages: { type: [MessageSchema] },
 }, {
   toObject: { virtuals: true },
   toJSON: {
@@ -34,13 +26,11 @@ const UserSchema = new Schema({
   timestamps: true,
 });
 
-/*
 UserSchema.pre('save', function beforeUserSave(next) {
   const user = this;
   if (!user.isModified('password')) {
     return next();
   }
-
   bcrypt.genSalt(10, function (err, salt) {
     if (err) {
       return next(err);
@@ -50,6 +40,7 @@ UserSchema.pre('save', function beforeUserSave(next) {
         return next(err);
       }
       user.password = hash;
+      console.log(hash);
       return next();
     });
   });
@@ -63,7 +54,6 @@ UserSchema.methods.comparePassword = function comparePassword(candidatePassword,
     callback(null, comparisonResult);
   });
 };
-*/
 
 const UserModel = mongoose.model('User', UserSchema);
 

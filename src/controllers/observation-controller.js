@@ -1,41 +1,37 @@
 import Observation from '../models/observation-model';
 import Contact from '../models/contact-model';
 
-const setExitTimeStamp = (object, newTime, res) => {
-  console.log('Setting exit time stamp object:', object)
-  object.dataExitTimestamp = newTime;
-  object.save()
+const setExitTimeStamp = (observation, newTime, res) => {
+  console.log('Setting exit time stamp object:', observation);
+  observation.dataExitTimestamp = newTime;
+  observation.save()
     .then(((result) => {
-      // res.json({ message: 'updated exit timestamp' });
-      console.log('updated exit timestamp')
+      res.json({ message: 'updated exit timestamp' });
+      // console.log('updated exit timestamp');
     }))
     .catch((error) => {
-      // res.json({ message: error });
-      console.log("Error in setting exit time stamp:", error)
+      return res.status(500).send({ error });
+      // console.log('Error in setting exit time stamp:', error);
     });
 };
 
-const setEndContactTime = (object, newTime, res) => {
-  console.log('Setting end time stamp object:', object)
-  object.endContactTime = newTime;
-  const duration = newTime - object.initialContactTime;
-  object.duration = duration;
-  object.save()
+const setEndContactTime = (contact, newTime, res) => {
+  console.log('Setting end time stamp object:', contact);
+  contact.endContactTime = newTime;
+  const duration = newTime - contact.initialContactTime;
+  contact.duration = duration;
+  contact.save()
     .then(((result) => {
-      // res.json({ message: 'updated exit timestamp' });
-      console.log('updated contact timestamp');
+      res.json({ message: 'updated exit timestamp' });
+      // console.log('updated contact timestamp');
     }))
     .catch((error) => {
-      // res.json({ message: error });
-      console.log('Error in setting end contact time:', error)
+      return res.status(500).send({ error });
+      // console.log('Error in setting end contact time:', error);
     });
 };
 
 export const addObservation = (req, res) => {
-  const observation = new Observation();
-
-  // one hour in milliseconds (will be used to establish the time frame for a contact)
-  const largeNumber = 3.6 * (10 ** 6);
 
   // update previous observation's end time if applicable
 
@@ -44,33 +40,38 @@ export const addObservation = (req, res) => {
       if (result !== null) {
         result.sort((a, b) => { return ((a.dataExitTimestamp < b.dataExitTimestamp) ? 1 : -1); });
         const mostRecent = result[0];
-        setExitTimeStamp(mostRecent, req.body.dataCollectionTimestamp, result);
+        setExitTimeStamp(mostRecent, req.body.dataCollectionTimestamp, res);
       }
     })
     .catch((error) => {
-      console.log('Error! Oh no!', error);
+      return res.status(500).send({ error });
     });
 
   // update the previous contact's end time if applicable
+
   Contact.find({ contactedUser: req.body.sourceUserID })
     .then((result) => {
       if (result !== null) {
         result.sort((a, b) => { return ((a.dataExitTimestamp < b.dataExitTimestamp) ? 1 : -1); });
         result.forEach((contact) => {
           if (contact.endContactTime === null) {
-            setEndContactTime(contact, req.body.dataCollectionTimestamp);
+            setEndContactTime(contact, req.body.dataCollectionTimestamp, res);
           }
         });
       }
     })
     .catch((error) => {
-      console.log('Error in updating end contact time', error);
+      return res.status(500).send({ error });
     });
 
   // identify all new contacts based on current location
+
+  // one hour in milliseconds (will be used to establish the time frame for a contact)
+  const oneHour = 3.6 * (10 ** 6);
+
   Observation.find({
     $and: [{ location: { $near: { $geometry: { type: 'Point', coordinates: [req.body.longitude, req.body.latitude] }, $maxDistance: 2 } } }, {
-      dataCollectionTimestamp: { $gte: (req.body.dataCollectionTimestamp - largeNumber), $lt: (req.body.dataCollectionTimestamp) },
+      dataCollectionTimestamp: { $gte: (req.body.dataCollectionTimestamp - oneHour), $lt: (req.body.dataCollectionTimestamp) },
     }],
   }).then((result) => {
     if (result!== null && result.length !== 0) {
@@ -92,17 +93,14 @@ export const addObservation = (req, res) => {
               console.log('added contact');
             }))
             .catch((error) => {
-              console.log('error at line 61');
-              console.log(error);
-              res.json({ message: error });
+              res.status(500).send({ error });
             });
         } else if (obs.sourceUserID !== req.body.sourceUserID) {
           console.log("HELLLLLLLLLOOOOOOO")
           const newContact1 = new Contact();
           const newContact2 = new Contact();
-
-          const latAverage = Math.abs((obs.location.coordinates[1] + req.body.latitude) / 2);
           const longAverage = Math.abs((obs.location.coordinates[0] + req.body.longitude) / 2);
+          const latAverage = Math.abs((obs.location.coordinates[1] + req.body.latitude) / 2);
           const averageLocation = [longAverage, latAverage];
           newContact1.location.type = 'Point';
           newContact1.location.coordinates = averageLocation;
@@ -127,19 +125,20 @@ export const addObservation = (req, res) => {
                 });
             }))
             .catch((error) => {
-              res.json({ message: error });
+              return res.status(500).send({ error });
             });
         }
       });
     }
-    console.log(result);
+    // console.log(result);
   })
     .catch((error) => {
-      console.log('error', error);
+      return res.status(500).send({ error });
     });
 
   // add the new observation
 
+  const observation = new Observation();
   observation.sourceUserID = req.body.sourceUserID;
   observation.location.type = 'Point';
   observation.location.coordinates = [req.body.longitude, req.body.latitude];
@@ -150,7 +149,7 @@ export const addObservation = (req, res) => {
       res.json({ message: 'added a location' });
     }))
     .catch((error) => {
-      // we'll have implement some sort of more robust error-handling here
+      return res.status(500).send({ error });
     });
 };
 
