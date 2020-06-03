@@ -35,7 +35,8 @@ export const getMessages = (req, res) => {
   return Message.find({ userID: req.params.id })
   // eslint-disable-next-line consistent-return
     .then((messages) => {
-      return res.json({ messages });
+      console.log('in API, message being sent', messages);
+      return res.send(messages);
     })
     .catch((error) => {
       return res.status(500).send({ error });
