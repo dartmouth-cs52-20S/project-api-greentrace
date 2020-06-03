@@ -79,7 +79,7 @@ export const addObservation = (req, res) => {
       dataCollectionTimestamp: { $gte: (req.body.dataCollectionTimestamp - oneHour), $lt: (req.body.dataCollectionTimestamp) },
     }],
   }).then((result) => {
-    if (result!== null && result.length !== 0) {
+    if (result!== null && result.length !== 0 ) {
       result.forEach((obs) => {
         console.log('Hello, this is obs', obs);
         if (obs.dataExitTimestamp !== null && obs.sourceUserID !== req.body.sourceUserID) {

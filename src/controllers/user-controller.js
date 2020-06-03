@@ -78,51 +78,84 @@ export const runTracing = (req, res) => {
             Notify this user and mark them notified */
 
   const twoWeeks = (1.2) * (10 ** 9); // two weeks back in milliseconds
-  Contact.find({
-    $and: [{ primaryUser: req.sourceUserID }, {
-      initalContactTime: {
-        $gte: (req.date - twoWeeks),
-        $lt: (req.date),
-      },
-    }],
-  })
-    .then((result) => {
-      if (result !== null) {
-        const notifiedUsers = [];
-        result.forEach((contact) => {
-          if (!notifiedUsers.includes(contact)) {
-            notifiedUsers.push(contact);
-            User.findOne({ _id: contact.contactedUser })
-              .then((contactedUser) => {
-                if (contactedUser !== null) {
-                  addMessage({
-                    // traceID: counter,
-                    covid: req.covid,
-                    tested: req.tested,
-                    contactDate: contact.initalContactTime,
-                    userID: contactedUser,
-                  }, res);
-                  // counter += 1;
-                  console.log('contacted user NOTIFICATION:', contactedUser);
-                }
-              })
-              .catch((err) => {
-                console.log('Error finding contacted user in user database', err);
-              });
-          }
-          // ONCE AGAIN, NEED WAY TO ACCESS THE USER THAT MAY HAVE BEEN EXPOSED
-        });
+
+  Contact.find({primaryUser: req.sourceUserID}).then((results) => {
+    const dateCompare = new Date().getTime();
+    results.forEach((contact) => {
+      if (contact.initialContactTime >= (dateCompare - twoWeeks) && contact.initialContactTime < dateCompare) {
+          const notifiedUsers = [];
+            if (!notifiedUsers.includes(contact)) {
+              notifiedUsers.push(contact);
+              User.findOne({ _id: contact.contactedUser })
+                .then((contactedUser) => {
+                  if (contactedUser !== null) {
+                    addMessage({
+                      // traceID: counter,
+                      covid: req.covid,
+                      tested: req.tested,
+                      contactDate: contact.initalContactTime,
+                      userID: contactedUser,
+                    }, res);
+                    // counter += 1;
+                    console.log('contacted user NOTIFICATION:', contactedUser);
+                  }
+                })
+                .catch((err) => {
+                  console.log('Error finding contacted user in user database', err);
+                });
+            }
+            // ONCE AGAIN, NEED WAY TO ACCESS THE USER THAT MAY HAVE BEEN EXPOSED
+
       }
     })
-    .catch((error) => {
-      console.log('Error finding contacts for infected user', error);
-    });
+  })
+  // Contact.find({
+  //   $and: [{ primaryUser: req.sourceUserID }, {
+  //     initalContactTime: {
+  //       $gte: (req.date - twoWeeks),
+  //       $lt: (req.date),
+  //     },
+  //   }],
+  // })
+    // .then((result) => {
+    //   console.log('line 91 result from finding contacts', result);
+    //   if (result !== null) {
+    //     const notifiedUsers = [];
+    //     result.forEach((contact) => {
+    //       if (!notifiedUsers.includes(contact)) {
+    //         notifiedUsers.push(contact);
+    //         User.findOne({ _id: contact.contactedUser })
+    //           .then((contactedUser) => {
+    //             if (contactedUser !== null) {
+    //               addMessage({
+    //                 // traceID: counter,
+    //                 covid: req.body.covid,
+    //                 tested: req.body.tested,
+    //                 contactDate: contact.initalContactTime,
+    //                 userID: contactedUser,
+    //               }, res);
+    //               // counter += 1;
+    //               console.log('contacted user NOTIFICATION:', contactedUser);
+    //             }
+    //           })
+    //           .catch((err) => {
+    //             console.log('Error finding contacted user in user database', err);
+    //           });
+    //       }
+    //       // ONCE AGAIN, NEED WAY TO ACCESS THE USER THAT MAY HAVE BEEN EXPOSED
+    //     });
+    //   }
+    // })
+    // .catch((error) => {
+    //   console.log('Error finding contacts for infected user', error);
+    // });
 };
 
 export const updateUser = (req, res) => {
   return User.findOne({ _id: req.params.id })
     // eslint-disable-next-line consistent-return
     .then((user) => {
+      console.log('user that got updated', user);
       let covidStatusChanged = false;
       // let testingStatusChange = false;
       if ('tested' in req.body) {
@@ -143,7 +176,9 @@ export const updateUser = (req, res) => {
       user.save()
         .then((result) => {
           // if newly covid positive
+          console.log('line 147 checking booleans', result.covid, covidStatusChanged);
           if ((result.covid && covidStatusChanged)) {
+            console.log('line 149 running tracing');
             runTracing({
               sourceUserID: result._id,
               date: new Date().getTime(),
