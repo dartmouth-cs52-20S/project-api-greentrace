@@ -22,12 +22,15 @@ export const addMessage = (req, res) => {
   newMessage.tested = req.tested;
   newMessage.contactDate = Number(req.contactDate);
   newMessage.userID = req.userID;
+  console.log('HERE');
   newMessage.save()
     .then((result) => {
-      res.json(result);
+      // res.json(result);
+      console.log(result);
     })
     .catch((error) => {
-      res.status(500).json({ error });
+      // res.status(500).json({ error });
+      console.log(error);
     });
 };
 
