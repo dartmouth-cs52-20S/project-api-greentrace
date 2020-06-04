@@ -25,20 +25,37 @@ export const symptomScorer = {
 };
 
 export const riskScorer = (user) => {
-  if (user.covid && user.tested) { // if tested positive for covid19
-    return 1;
-  }
   let numSymptoms = 0;
   Object.keys(user.symptoms).forEach((symptom) => {
     if (user.symptoms[symptom]) {
       numSymptoms += 1;
     }
   });
-  if (numSymptoms >= 4) { // if has enough symptoms
-    return 2;
-  } else {
-    return 3;
+  if (user.tested) {
+    if (user.covid) {
+      // positive test
+      return 7;
+    } else if (!user.covid && numSymptoms === 0) {
+      // low danger
+      return 1;
+    } else if (!user.covid && numSymptoms <= 4) {
+      // low danger
+      return 2;
+    } else if (!user.covid && numSymptoms > 4) {
+      // high danger
+      return 5;
+    }
+  } else if (!user.tested) {
+    if (numSymptoms === 0) {
+      return 3;
+    } else if (numSymptoms <= 4) {
+      return 4;
+    } else {
+      // high danger
+      return 6;
+    }
   }
+  return 0;
 };
 
 export const getNumPeopleTested = (req, res) => {

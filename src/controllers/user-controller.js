@@ -44,6 +44,7 @@ export const signup = (req, res, next) => {
         newUser.covid = false;
         newUser.symptoms = defaultSymptoms;
         newUser.messages = [];
+        newUser.risk = 0;
         newUser.save()
           .then((result) => {
             res.send({
