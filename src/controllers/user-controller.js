@@ -93,11 +93,9 @@ export const runTracing = (req, res) => {
                   contactDate: contact.initialContactTime,
                   userID: contactedUser,
                 }, res);
-                console.log('contacted user NOTIFICATION:', contactedUser);
               }
             })
             .catch((err) => {
-              console.log('Error finding contacted user in user database', err);
             });
         }
       }
@@ -109,7 +107,6 @@ export const updateUser = (req, res) => {
   return User.findOne({ _id: req.params.id })
     // eslint-disable-next-line consistent-return
     .then((user) => {
-      console.log('user that got updated', user);
       let covidStatusChanged = false;
       if ('tested' in req.body) {
         user.tested = req.body.tested;
@@ -126,9 +123,7 @@ export const updateUser = (req, res) => {
       user.save()
         .then((result) => {
           // if newly covid positive
-          console.log('line 147 checking booleans', result.covid, covidStatusChanged);
           if ((result.covid && covidStatusChanged)) {
-            console.log('line 149 running tracing');
             runTracing({
               sourceUserID: result._id,
               date: new Date().getTime(),
