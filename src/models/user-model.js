@@ -10,6 +10,8 @@ const UserSchema = new Schema({
   tested: { type: Boolean },
   covid: { type: Boolean },
   symptoms: { type: Object },
+  risk: { type: Number },
+  // messages: { type: [MessageSchema] },
 }, {
   toObject: { virtuals: true },
   toJSON: {
