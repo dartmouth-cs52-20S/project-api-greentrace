@@ -43,6 +43,7 @@ export const signup = (req, res, next) => {
         newUser.tested = false;
         newUser.covid = false;
         newUser.symptoms = defaultSymptoms;
+        newUser.risk = 0;
         newUser.save()
           .then((result) => {
             res.send({

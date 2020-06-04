@@ -17,11 +17,16 @@ API in the [wiki](https://github.com/dartmouth-cs52-20S/project-api-greentrace/w
 ├── Procfile
 ├── README.md
 ├── package.json
+├── pruning.js
 ├── src
 │   ├── controllers
+│   │   ├── contact-controller.js
+│   │   ├── message-controller.js
 │   │   ├── observation-controller.js
 │   │   └── user-controller.js
 │   ├── models
+│   │   ├── contact-model.js
+│   │   ├── message-model.js
 │   │   ├── observation-model.js
 │   │   └── user-model.js
 │   ├── router.js

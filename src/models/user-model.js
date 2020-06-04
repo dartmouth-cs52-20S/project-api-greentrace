@@ -11,7 +11,6 @@ const UserSchema = new Schema({
   covid: { type: Boolean },
   symptoms: { type: Object },
   risk: { type: Number },
-  // messages: { type: [MessageSchema] },
 }, {
   toObject: { virtuals: true },
   toJSON: {
