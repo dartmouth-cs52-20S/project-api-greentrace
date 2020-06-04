@@ -24,10 +24,10 @@ export const addMessage = (req, res) => {
   newMessage.userID = req.userID;
   newMessage.save()
     .then((result) => {
-      res.json(result);
+      // res.json(result);
     })
     .catch((error) => {
-      res.status(500).json({ error });
+      // res.status(500).json({ error });
     });
 };
 
@@ -35,7 +35,6 @@ export const getMessages = (req, res) => {
   return Message.find({ userID: req.params.id })
   // eslint-disable-next-line consistent-return
     .then((messages) => {
-      console.log('in API, message being sent', messages);
       return res.send(messages);
     })
     .catch((error) => {
