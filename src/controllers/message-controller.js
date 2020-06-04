@@ -22,15 +22,12 @@ export const addMessage = (req, res) => {
   newMessage.tested = req.tested;
   newMessage.contactDate = Number(req.contactDate);
   newMessage.userID = req.userID;
-  console.log('HERE');
   newMessage.save()
     .then((result) => {
       // res.json(result);
-      console.log(result);
     })
     .catch((error) => {
       // res.status(500).json({ error });
-      console.log(error);
     });
 };
 
@@ -38,7 +35,6 @@ export const getMessages = (req, res) => {
   return Message.find({ userID: req.params.id })
   // eslint-disable-next-line consistent-return
     .then((messages) => {
-      console.log('in API, message being sent', messages);
       return res.send(messages);
     })
     .catch((error) => {
