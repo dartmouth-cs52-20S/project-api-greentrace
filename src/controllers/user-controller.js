@@ -45,7 +45,6 @@ export const signup = (req, res, next) => {
         newUser.tested = false;
         newUser.covid = false;
         newUser.symptoms = defaultSymptoms;
-        newUser.messages = [];
         newUser.save()
           .then((result) => {
             res.send({
@@ -99,7 +98,7 @@ export const runTracing = (req, res) => {
                     // traceID: counter,
                     covid: req.covid,
                     tested: req.tested,
-                    contactDate: contact.initalContactTime,
+                    contactDate: contact.initialContactTime,
                     userID: contactedUser,
                   }, res);
                   // counter += 1;

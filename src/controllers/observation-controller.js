@@ -34,13 +34,12 @@ const setEndContactTime = (contact, newTime, res) => {
 };
 
 export const addObservation = (req, res) => {
-
   // update previous observation's end time if applicable
   console.log('observation body', req.body);
   Observation.find({ sourceUserID: req.body.sourceUserID })
     .then((result) => {
       if (result !== null) {
-        console.log('TRYING TO DEBUG setExitTimeStamp')
+        console.log('TRYING TO DEBUG setExitTimeStamp');
         result.sort((a, b) => { return ((a.dataExitTimestamp > b.dataExitTimestamp) ? 1 : -1); });
         const mostRecent = result[0];
         setExitTimeStamp(mostRecent, req.body.dataCollectionTimestamp, res);
@@ -79,7 +78,7 @@ export const addObservation = (req, res) => {
       dataCollectionTimestamp: { $gte: (req.body.dataCollectionTimestamp - oneHour), $lt: (req.body.dataCollectionTimestamp) },
     }],
   }).then((result) => {
-    if (result!== null && result.length !== 0) {
+    if (result !== null && result.length !== 0) {
       result.forEach((obs) => {
         console.log('Hello, this is obs', obs);
         if (obs.dataExitTimestamp !== null && obs.sourceUserID !== req.body.sourceUserID) {
@@ -103,7 +102,7 @@ export const addObservation = (req, res) => {
               // res.status(500).send({ error });
             });
         } else if (obs.sourceUserID !== req.body.sourceUserID) {
-          console.log("HELLLLLLLLLOOOOOOO");
+          console.log('HELLLLLLLLLOOOOOOO');
           const newContact1 = new Contact();
           const newContact2 = new Contact();
           const longAverage = Math.abs((obs.location.coordinates[0] + req.body.longitude) / 2);
