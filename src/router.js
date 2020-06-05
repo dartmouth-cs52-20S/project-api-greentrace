@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as Observations from './controllers/observation-controller';
 import * as User from './controllers/user-controller';
 import * as Message from './controllers/message-controller';
-import { getNumPeopleTested, getHeatmap } from './services/utils';
+import { getNumPeopleTested } from './services/utils';
 import { requireSignin } from './services/passport';
 
 
@@ -16,7 +16,7 @@ router.route('/stats')
   .get(getNumPeopleTested);
 
 router.route('/heatmap')
-  .get(getHeatmap);
+  .get(User.getHeatmap);
 
 router.route('/location')
   .post(Observations.addObservation)
