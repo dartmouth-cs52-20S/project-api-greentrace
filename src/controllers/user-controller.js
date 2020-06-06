@@ -2,11 +2,13 @@
 /* eslint-disable prefer-arrow-callback */
 import jwt from 'jwt-simple';
 import dotenv from 'dotenv';
+import randomWords from 'random-words';
 import User from '../models/user-model';
 import { riskScorer, defaultSymptoms } from '../services/utils';
 import { addMessage } from './message-controller';
 import Contact from '../models/contact-model';
 import Observation from '../models/observation-model';
+import sgMail from '@sendgrid/mail';
 
 dotenv.config({ silent: true });
 
@@ -31,14 +33,36 @@ export const signup = (req, res, next) => {
     return res.status(422).send('You must provide an email and password');
   }
 
-  return User.findOne({ email })
+  // generate wordToken
+  const phraseToken = randomWords({ exactly: 2, join: '-' });
+  
+  return User.findOne({ phraseToken })
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) {
-        return res.status(422).send('A user with this email already exists');
+        return res.status(422).send('A user has already created an account with this email');
       } else {
+        const msg = {
+          to: `${email}`,
+          from: 'greentracedartmouth@gmail.com',
+          subject: 'Your GreenTrace Phrase Token',
+          html: `<strong>${phraseToken}</strong>`,
+        };
+
+        // send sign-up email
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        sgMail
+          .send(msg)
+          .then(() => {}, error => {
+            console.error(error);
+
+            if (error.response) {
+              console.error(error.response.body)
+            }
+        });
+        // make new user
         const newUser = new User();
-        newUser.email = email;
+        newUser.phraseToken = phraseToken;
         newUser.password = password;
         newUser.tested = false;
         newUser.covid = false;
@@ -171,7 +195,13 @@ export const getNumContactsCovidPositive = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       // calculate risk score
-      const numContacts = user.messages.length;
+      Message.countDocuments({ userID: user._id, covid: true })
+        .then((result) => {
+          const numContacts = result;
+        })
+        .catch((error) => {
+          const numContacts = 100;
+        }) 
       return res.json({ message: numContacts });
     })
     .catch((error) => {
