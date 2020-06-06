@@ -36,7 +36,7 @@ router.route('/user/:id/numcontacts')
   .get(User.getNumContactsCovidPositive);
 
 router.route('/user/:id/numSymptoms')
-  .get(User.getNumSymptoms)
+  .get(User.getNumSymptoms);
 
 router.route('/user/:id/messages')
   .get(Message.getMessages)
