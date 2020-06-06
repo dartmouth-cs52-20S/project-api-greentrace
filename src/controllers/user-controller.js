@@ -3,12 +3,13 @@
 import jwt from 'jwt-simple';
 import dotenv from 'dotenv';
 import randomWords from 'random-words';
+import sgMail from '@sendgrid/mail';
 import User from '../models/user-model';
 import { riskScorer, defaultSymptoms } from '../services/utils';
 import { addMessage } from './message-controller';
 import Contact from '../models/contact-model';
 import Observation from '../models/observation-model';
-import sgMail from '@sendgrid/mail';
+import Message from '../models/message-model';
 
 dotenv.config({ silent: true });
 
@@ -35,7 +36,7 @@ export const signup = (req, res, next) => {
 
   // generate wordToken
   const phraseToken = randomWords({ exactly: 2, join: '-' });
-  
+
   return User.findOne({ phraseToken })
     // eslint-disable-next-line consistent-return
     .then((user) => {
@@ -51,32 +52,28 @@ export const signup = (req, res, next) => {
 
         // send sign-up email
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        sgMail
-          .send(msg)
-          .then(() => {}, error => {
-            console.error(error);
-
-            if (error.response) {
-              console.error(error.response.body)
-            }
-        });
-        // make new user
-        const newUser = new User();
-        newUser.phraseToken = phraseToken;
-        newUser.password = password;
-        newUser.tested = false;
-        newUser.covid = false;
-        newUser.symptoms = defaultSymptoms;
-        newUser.risk = 0;
-        newUser.save()
-          .then((result) => {
-            res.send({
-              token: tokenForUser(result),
-              user: result,
-            });
-          })
-          .catch((error) => {
-            return res.status(500).send({ error });
+        sgMail.send(msg)
+          .then(() => {
+            // make new user
+            const newUser = new User();
+            newUser.phraseToken = phraseToken;
+            newUser.password = password;
+            newUser.tested = false;
+            newUser.covid = false;
+            newUser.symptoms = defaultSymptoms;
+            newUser.risk = 0;
+            newUser.save()
+              .then((result) => {
+                res.send({
+                  token: tokenForUser(result),
+                  user: result,
+                });
+              })
+              .catch((error) => {
+                return res.status(500).send({ error });
+              });
+          }, (error) => {
+            return res.status(550).send(error.response);
           });
       }
     })
@@ -195,13 +192,14 @@ export const getNumContactsCovidPositive = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       // calculate risk score
+      let numContacts = 0;
       Message.countDocuments({ userID: user._id, covid: true })
         .then((result) => {
-          const numContacts = result;
+          numContacts = result;
         })
         .catch((error) => {
-          const numContacts = 100;
-        }) 
+          numContacts = 100;
+        });
       return res.json({ message: numContacts });
     })
     .catch((error) => {
