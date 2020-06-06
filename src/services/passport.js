@@ -7,9 +7,9 @@ import User from '../models/user-model';
 require('dotenv').config();
 dotenv.config({ silent: true });
 
-// options for local strategy, we'll use email AS the username
+// options for local strategy, we'll use phraseToken AS the username
 // not have separate ones
-const localOptions = { usernameField: 'email' };
+const localOptions = { usernameField: 'phraseToken' };
 
 // options for jwt strategy
 // we'll pass in the jwt in an `authorization` header
@@ -24,12 +24,12 @@ const jwtOptions = {
 
 
 // username + password authentication strategy
-const localLogin = new LocalStrategy(localOptions, (email, password, done) => {
-  // Verify this email and password, call done with the user
-  // if it is the correct email and password
+const localLogin = new LocalStrategy(localOptions, (phraseToken, password, done) => {
+  // Verify this token and password, call done with the user
+  // if it is the correct token and password
   // otherwise, call done with false
   // eslint-disable-next-line consistent-return
-  User.findOne({ email }, (err, user) => {
+  User.findOne({ phraseToken }, (err, user) => {
     if (err) { return done(err); }
 
     if (!user) { return done(null, false); }

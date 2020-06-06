@@ -2,51 +2,40 @@ import Observation from '../models/observation-model';
 import Contact from '../models/contact-model';
 
 const setExitTimeStamp = (observation, newTime, res) => {
-  console.log('Setting exit time stamp object:', observation);
   observation.dataExitTimestamp = newTime;
   observation.save()
     .then(((result) => {
       // res.json({ message: 'updated exit timestamp' });
-      console.log('updated exit timestamp');
     }))
     .catch((error) => {
-      console.log('error line 13');
       // return res.status(500).send({ error });
-      console.log('Error in setting exit time stamp:', error);
     });
 };
 
 const setEndContactTime = (contact, newTime, res) => {
-  console.log('Setting end time stamp object:', contact);
   contact.endContactTime = newTime;
   const duration = newTime - contact.initialContactTime;
   contact.duration = duration;
   contact.save()
     .then(((result) => {
       // res.json({ message: 'updated exit timestamp' });
-      console.log('updated contact timestamp');
     }))
     .catch((error) => {
-      console.log('error line 30');
       // return res.status(500).send({ error });
-      console.log('Error in setting end contact time:', error);
     });
 };
 
 export const addObservation = (req, res) => {
   // update previous observation's end time if applicable
-  console.log('observation body', req.body);
   Observation.find({ sourceUserID: req.body.sourceUserID })
     .then((result) => {
       if (result !== null) {
-        console.log('TRYING TO DEBUG setExitTimeStamp');
         result.sort((a, b) => { return ((a.dataExitTimestamp > b.dataExitTimestamp) ? 1 : -1); });
         const mostRecent = result[0];
         setExitTimeStamp(mostRecent, req.body.dataCollectionTimestamp, res);
       }
     })
     .catch((error) => {
-      console.log('error line 49');
       // return res.status(500).send({ error });
     });
 
@@ -64,7 +53,6 @@ export const addObservation = (req, res) => {
       }
     })
     .catch((error) => {
-      console.log('error line 67');
       // return res.status(500).send({ error });
     });
 
@@ -80,7 +68,6 @@ export const addObservation = (req, res) => {
   }).then((result) => {
     if (result !== null && result.length !== 0) {
       result.forEach((obs) => {
-        console.log('Hello, this is obs', obs);
         if (obs.dataExitTimestamp !== null && obs.sourceUserID !== req.body.sourceUserID) {
           const newContact = new Contact();
           const latAverage = ((obs.location.coordinates[1] + req.body.latitude) / 2);
@@ -95,14 +82,11 @@ export const addObservation = (req, res) => {
           newContact.save()
             .then(((result2) => {
               // res.json({ message: 'added a contact' });
-              console.log('added contact');
             }))
             .catch((error) => {
-              console.log('error line 100');
               // res.status(500).send({ error });
             });
         } else if (obs.sourceUserID !== req.body.sourceUserID) {
-          console.log('HELLLLLLLLLOOOOOOO');
           const newContact1 = new Contact();
           const newContact2 = new Contact();
           const longAverage = Math.abs((obs.location.coordinates[0] + req.body.longitude) / 2);
@@ -110,7 +94,6 @@ export const addObservation = (req, res) => {
           const averageLocation = [longAverage, latAverage];
           newContact1.location.type = 'Point';
           newContact1.location.coordinates = averageLocation;
-          console.log('req.body here', req.body);
           newContact1.contactedUser = req.body.sourceUserID;
           newContact1.primaryUser = obs.sourceUserID;
           newContact1.initialContactTime = req.body.dataCollectionTimestamp;
@@ -126,24 +109,19 @@ export const addObservation = (req, res) => {
               newContact2.save()
                 .then(((result3) => {
                   // res.json({ message: 'added a contact' });
-                  console.log('added contact');
                 }))
                 .catch((error) => {
                   // res.json({ message: error });
-                  console.log('error line 131', error);
                 });
             }))
             .catch((error) => {
-              console.log('error line 133');
               // return res.status(500).send({ error });
             });
         }
       });
     }
-    // console.log(result);
   })
     .catch((error) => {
-      console.log('error line 142');
       // return res.status(500).send({ error });
     });
 
@@ -160,7 +138,6 @@ export const addObservation = (req, res) => {
       res.json({ message: 'added a location' });
     }))
     .catch((error) => {
-      console.log('error line 159');
       // return res.status(500).send({ error });
     });
 };
