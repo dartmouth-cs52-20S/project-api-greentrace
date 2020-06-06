@@ -126,3 +126,17 @@ export const getHeatmap = (req, res) => {
       return res.status(500).send({ error });
     });
 };
+
+export const getNumPositive = (req, res) => {
+  User.find({covid:true})
+    .then((result) => {
+      if (result !== null){
+        const num = result.length;
+        return res.json({message: num})
+      }
+    })
+    .catch((err) => {
+      console.log('oops');
+      return res.status(500).send({err})
+    })
+}
