@@ -1,3 +1,4 @@
+/* eslint-disable no-loop-func */
 /* eslint-disable func-names */
 /* eslint-disable prefer-arrow-callback */
 import jwt from 'jwt-simple';
@@ -178,29 +179,33 @@ export const getNumContactsCovidPositive = (req, res) => {
     // eslint-disable-next-line consistent-return
     .then((contacts) => {
       let positiveContacts = 0;
-      let listLength = contacts.length;
-      for (let i=0; i < listLength; i++){
-        let user = contacts[i];
-        User.find({_id: user.primaryUser})
-        .then((result) => {
-          if (i !== listLength - 1) {
-            console.log('hit');
-            const result1 = result[0];
-            if (result1.covid === true){
-              positiveContacts ++;
+      const listLength = contacts.length;
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < listLength; i++) {
+        const user = contacts[i];
+        User.find({ _id: user.primaryUser })
+          // eslint-disable-next-line consistent-return
+          .then((result) => {
+            if (i !== listLength - 1) {
+              console.log('hit');
+              const result1 = result[0];
+              if (result1.covid === true) {
+                // eslint-disable-next-line no-plusplus
+                positiveContacts++;
+              }
+            } else if (i === listLength - 1) {
+              console.log('smash');
+              const result2 = result[0];
+              if (result2.covid === true) {
+                // eslint-disable-next-line no-plusplus
+                positiveContacts++;
+              }
+              return res.json({ message: positiveContacts });
             }
-          } else if (i === listLength - 1){
-            console.log('smash');
-          const result2 = result[0];
-          if (result2.covid === true){
-            positiveContacts ++;
-          }
-          return res.json({message: positiveContacts})
-        }
-        })
-        .catch((err) => {
-          res.status(500).send({err})
-        })
+          })
+          .catch((err) => {
+            res.status(500).send({ err });
+          });
       }
     })
     .catch((error) => {
