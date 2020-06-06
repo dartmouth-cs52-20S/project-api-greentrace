@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as Observations from './controllers/observation-controller';
 import * as User from './controllers/user-controller';
 import * as Message from './controllers/message-controller';
-import { getNumPeopleTested, getHeatmap } from './services/utils';
+import { getNumPeopleTested, getHeatmap, getNumPositive } from './services/utils';
 import { requireSignin } from './services/passport';
 
 
@@ -14,6 +14,9 @@ router.get('/', (req, res) => {
 
 router.route('/stats')
   .get(getNumPeopleTested);
+
+router.route('/numPositive')
+  .get(getNumPositive);
 
 router.route('/heatmap')
   .get(getHeatmap);
@@ -31,6 +34,9 @@ router.route('/user/:id/risk')
 
 router.route('/user/:id/numcontacts')
   .get(User.getNumContactsCovidPositive);
+
+router.route('/user/:id/numSymptoms')
+  .get(User.getNumSymptoms);
 
 router.route('/user/:id/messages')
   .get(Message.getMessages)
