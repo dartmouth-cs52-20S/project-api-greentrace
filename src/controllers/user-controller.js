@@ -92,7 +92,7 @@ export const runTracing = (req, res) => {
                   covid: req.covid,
                   tested: req.tested,
                   contactDate: contact.initialContactTime,
-                  userID: contactedUser,
+                  userID: contactedUser._id,
                 }, res);
                 console.log('contacted user NOTIFICATION:', contactedUser);
               }
@@ -173,12 +173,35 @@ export const getRiskScore = (req, res) => {
 };
 
 export const getNumContactsCovidPositive = (req, res) => {
-  return User.findOne({ _id: req.params.id })
+  console.log('made it into getNumContactsCovidPositive', req.params.id);
+  return Contact.find({ contactedUser: req.params.id })
     // eslint-disable-next-line consistent-return
-    .then((user) => {
-      // calculate risk score
-      const numContacts = user.messages.length;
-      return res.json({ message: numContacts });
+    .then((contacts) => {
+      let positiveContacts = 0;
+      let listLength = contacts.length;
+      for (let i=0; i < listLength; i++){
+        let user = contacts[i];
+        User.find({_id: user.primaryUser})
+        .then((result) => {
+          if (i !== listLength - 1) {
+            console.log('hit');
+            const result1 = result[0];
+            if (result1.covid === true){
+              positiveContacts ++;
+            }
+          } else if (i === listLength - 1){
+            console.log('smash');
+          const result2 = result[0];
+          if (result2.covid === true){
+            positiveContacts ++;
+          }
+          return res.json({message: positiveContacts})
+        }
+        })
+        .catch((err) => {
+          res.status(500).send({err})
+        })
+      }
     })
     .catch((error) => {
       return res.status(500).send({ error });
