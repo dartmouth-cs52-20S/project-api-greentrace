@@ -5,13 +5,12 @@ import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 const UserSchema = new Schema({
-  email: { type: String, unique: true, lowercase: true },
+  phraseToken: { type: String },
   password: { type: String },
   tested: { type: Boolean },
   covid: { type: Boolean },
   symptoms: { type: Object },
   risk: { type: Number },
-  // messages: { type: [MessageSchema] },
 }, {
   toObject: { virtuals: true },
   toJSON: {
@@ -41,7 +40,6 @@ UserSchema.pre('save', function beforeUserSave(next) {
         return next(err);
       }
       user.password = hash;
-      console.log(hash);
       return next();
     });
   });

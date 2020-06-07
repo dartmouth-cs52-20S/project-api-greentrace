@@ -4,7 +4,7 @@
 
 The backend for [Greentrace](https://github.com/dartmouth-cs52-20S/project-greentrace), a contact-tracing application designed for Darmtouth College. Built with [node.js](https://nodejs.org/en/), [express](https://expressjs.com/), and a [MongoDB](https://www.mongodb.com/) database.
 
-Features a User model to manage data for individual students and and Event model to handle contact tracing based on users' interactions with each other and changes in location.
+Features a User model to manage data for individual students, an Observation model to manage locations visited by users, and a Contact model to handle contact tracing based on users' interactions with each other and changes in location.
 
 User authentication and security is handle by [passport.js](http://www.passportjs.org/).
 
@@ -17,11 +17,16 @@ API in the [wiki](https://github.com/dartmouth-cs52-20S/project-api-greentrace/w
 ├── Procfile
 ├── README.md
 ├── package.json
+├── pruning.js
 ├── src
 │   ├── controllers
+│   │   ├── contact-controller.js
+│   │   ├── message-controller.js
 │   │   ├── observation-controller.js
 │   │   └── user-controller.js
 │   ├── models
+│   │   ├── contact-model.js
+│   │   ├── message-model.js
 │   │   ├── observation-model.js
 │   │   └── user-model.js
 │   ├── router.js

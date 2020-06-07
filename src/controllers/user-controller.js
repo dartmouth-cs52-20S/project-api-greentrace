@@ -3,6 +3,8 @@
 /* eslint-disable prefer-arrow-callback */
 import jwt from 'jwt-simple';
 import dotenv from 'dotenv';
+import randomWords from 'random-words';
+import sgMail from '@sendgrid/mail';
 import User from '../models/user-model';
 import { riskScorer, defaultSymptoms } from '../services/utils';
 import { addMessage } from './message-controller';
@@ -52,29 +54,50 @@ export const signup = (req, res, next) => {
     return res.status(422).send('You must provide an email and password');
   }
 
-  return User.findOne({ email })
+  // generate wordToken
+  const phraseToken = randomWords({ exactly: 2, join: '-' });
+
+  return User.findOne({ phraseToken })
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (user) {
-        return res.status(422).send('A user with this email already exists');
+        return res.status(422).send('A user has already created an account with this email');
       } else {
-        const newUser = new User();
-        newUser.email = email;
-        newUser.password = password;
-        newUser.tested = false;
-        newUser.covid = false;
-        newUser.symptoms = defaultSymptoms;
-        newUser.messages = [];
-        newUser.risk = 0;
-        newUser.save()
-          .then((result) => {
-            res.send({
-              token: tokenForUser(result),
-              user: result,
-            });
-          })
-          .catch((error) => {
-            return res.status(500).send({ error });
+        const msg = {
+          to: `${email}`,
+          from: 'greentracedartmouth@gmail.com',
+          subject: 'Your GreenTrace Phrase Token',
+          html: `<strong>${phraseToken}</strong>`,
+        };
+
+        // send sign-up email
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        sgMail.send(msg)
+          .then(() => {
+            console.log('ENTERING INTO USER CREATION SIGNUP');
+            // make new user
+            const newUser = new User();
+            newUser.phraseToken = phraseToken;
+            newUser.password = password;
+            newUser.tested = false;
+            newUser.covid = false;
+            newUser.symptoms = defaultSymptoms;
+            newUser.risk = 0;
+            console.log(newUser);
+            newUser.save()
+              .then((result) => {
+                console.log('AFTER SAVING USER', result);
+                res.send({
+                  token: tokenForUser(result),
+                  user: result,
+                });
+              })
+              .catch((error) => {
+                console.log('ERROR IN SAVING', error);
+                return res.status(500).send({ error });
+              });
+          }, (error) => {
+            return res.status(550).send(error.response);
           });
       }
     })
@@ -96,7 +119,7 @@ export const runTracing = (req, res) => {
           Get the user associated with the userID
           If the user hasn't been notified already for this trace
             Notify this user and mark them notified */
-
+  console.log('IN RUN TRACING', req);
   const twoWeeks = (1.2) * (10 ** 9); // two weeks back in milliseconds
 
   Contact.find({ primaryUser: req.sourceUserID }).then((results) => {
@@ -109,17 +132,16 @@ export const runTracing = (req, res) => {
           User.findOne({ _id: contact.contactedUser })
             .then((contactedUser) => {
               if (contactedUser !== null) {
+                console.log('LINE 115 HERE', contactedUser);
                 addMessage({
                   covid: req.covid,
                   tested: req.tested,
                   contactDate: contact.initialContactTime,
                   userID: contactedUser._id,
                 }, res);
-                console.log('contacted user NOTIFICATION:', contactedUser);
               }
             })
             .catch((err) => {
-              console.log('Error finding contacted user in user database', err);
             });
         }
       }
@@ -131,7 +153,6 @@ export const updateUser = (req, res) => {
   return User.findOne({ _id: req.params.id })
     // eslint-disable-next-line consistent-return
     .then((user) => {
-      console.log('user that got updated', user);
       let covidStatusChanged = false;
       if ('tested' in req.body) {
         user.tested = req.body.tested;
@@ -148,9 +169,7 @@ export const updateUser = (req, res) => {
       user.save()
         .then((result) => {
           // if newly covid positive
-          console.log('line 147 checking booleans', result.covid, covidStatusChanged);
           if ((result.covid && covidStatusChanged)) {
-            console.log('line 149 running tracing');
             runTracing({
               sourceUserID: result._id,
               date: new Date().getTime(),
@@ -223,8 +242,8 @@ function countPositiveContacts(contacts, callback, num, users) {
       // adjust when we add token
       // console.log('user_id', user.email);
       if ((user.covid)) {
-        if (!users.includes(user.email)) {
-          users.push(user.email);
+        if (!users.includes(user.phraseToken)) {
+          users.push(user.phraseToken);
           // console.log(!users.includes(user.email));
           // console.log(num);
           num += 1;
