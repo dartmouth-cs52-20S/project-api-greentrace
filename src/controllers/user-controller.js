@@ -26,6 +26,26 @@ export const signin = (req, res, next) => {
   });
 };
 
+export const changePassword = (req, res, next) => {
+  const { newPass } = req.body;
+  User.findOne({ _id: req.params.id })
+    .then((user) => {
+      user.password = newPass;
+      user.save()
+        .then((result) => {
+          res.send({
+            token: tokenForUser(req.user),
+            user: req.user,
+          });
+        }).catch((error) => {
+          res.send({ error });
+        });
+    })
+    .catch((error) => {
+      res.send({ error });
+    });
+};
+
 export const signup = (req, res, next) => {
   const { email } = req.body;
   const { password } = req.body;
@@ -194,43 +214,85 @@ export const getRiskScore = (req, res) => {
 
 export const getNumContactsCovidPositive = (req, res) => {
   console.log('made it into getNumContactsCovidPositive', req.params.id);
-  return Contact.find({ contactedUser: req.params.id })
-    // eslint-disable-next-line consistent-return
-    .then((contacts) => {
-      let positiveContacts = 0;
-      const listLength = contacts.length;
-      // eslint-disable-next-line no-plusplus
-      for (let i = 0; i < listLength; i++) {
-        const user = contacts[i];
-        User.find({ _id: user.primaryUser })
-          // eslint-disable-next-line consistent-return
-          .then((result) => {
-            if (i !== listLength - 1) {
-              console.log('hit');
-              const result1 = result[0];
-              if (result1.covid === true) {
-                // eslint-disable-next-line no-plusplus
-                positiveContacts++;
-              }
-            } else if (i === listLength - 1) {
-              console.log('smash');
-              const result2 = result[0];
-              if (result2.covid === true) {
-                // eslint-disable-next-line no-plusplus
-                positiveContacts++;
-              }
-              return res.json({ message: positiveContacts });
-            }
-          })
-          .catch((err) => {
-            res.status(500).send({ err });
-          });
+  return Contact.find({ contactedUser: req.params.id }).exec(function (err, contacts) {
+    countPositiveContacts(contacts, function (err, num) {
+      if (err) {
+        console.log('ayooo3');
+        return res.status(500).send({ err });
+      } else {
+        return res.json({ message: num });
       }
-    })
-    .catch((error) => {
-      return res.status(500).send({ error });
     });
+  });
 };
+
+function countPositiveContacts(contacts, callback, num, users) {
+  num = num || 0;
+  users = users || [];
+  if (contacts.length < 1) {
+    callback(null, num);
+  } else {
+    const contac = contacts.shift();
+    // eslint-disable-next-line consistent-return
+    User.findOne({ _id: contac.primaryUser }, function (err, user) {
+      if (err) {
+        return callback(err);
+      }
+      // console.log('users', users);
+      // adjust when we add token
+      // console.log('user_id', user.email);
+      if ((user.covid)) {
+        if (!users.includes(user.email)) {
+          users.push(user.email);
+          // console.log(!users.includes(user.email));
+          // console.log(num);
+          num += 1;
+        }
+      }
+      countPositiveContacts(contacts, callback, num, users);
+    });
+  }
+}
+
+// export const getNumContactsCovidPositive = (req, res) => {
+//   console.log('made it into getNumContactsCovidPositive', req.params.id);
+//   return Contact.find({ contactedUser: req.params.id })
+//     // eslint-disable-next-line consistent-return
+//     .then((contacts) => {
+//       let positiveContacts = 0;
+//       const listLength = contacts.length;
+//       // eslint-disable-next-line no-plusplus
+//       for (let i = 0; i < listLength; i++) {
+//         const user = contacts[i];
+//         User.find({ _id: user.primaryUser })
+//           // eslint-disable-next-line consistent-return
+//           .then((result) => {
+//             if (i !== listLength - 1) {
+//               console.log('hit');
+//               const result1 = result[0];
+//               if (result1.covid === true) {
+//                 // eslint-disable-next-line no-plusplus
+//                 positiveContacts++;
+//               }
+//             } else if (i === listLength - 1) {
+//               console.log('smash');
+//               const result2 = result[0];
+//               if (result2.covid === true) {
+//                 // eslint-disable-next-line no-plusplus
+//                 positiveContacts++;
+//               }
+//               return res.json({ message: positiveContacts });
+//             }
+//           })
+//           .catch((err) => {
+//             res.status(500).send({ err });
+//           });
+//       }
+//     })
+//     .catch((error) => {
+//       return res.status(500).send({ error });
+//     });
+// };
 
 export const getNumSymptoms = (req, res) => {
   return User.findOne({ _id: req.params.id })
