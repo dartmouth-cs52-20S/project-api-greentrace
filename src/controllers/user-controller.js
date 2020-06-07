@@ -54,6 +54,7 @@ export const signup = (req, res, next) => {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         sgMail.send(msg)
           .then(() => {
+            console.log('ENTERING INTO USER CREATION SIGNUP');
             // make new user
             const newUser = new User();
             newUser.phraseToken = phraseToken;
@@ -62,14 +63,17 @@ export const signup = (req, res, next) => {
             newUser.covid = false;
             newUser.symptoms = defaultSymptoms;
             newUser.risk = 0;
+            console.log(newUser);
             newUser.save()
               .then((result) => {
+                console.log('AFTER SAVING USER', result);
                 res.send({
                   token: tokenForUser(result),
                   user: result,
                 });
               })
               .catch((error) => {
+                console.log('ERROR IN SAVING', error);
                 return res.status(500).send({ error });
               });
           }, (error) => {
@@ -95,7 +99,7 @@ export const runTracing = (req, res) => {
           Get the user associated with the userID
           If the user hasn't been notified already for this trace
             Notify this user and mark them notified */
-
+  console.log('IN RUN TRACING', req);
   const twoWeeks = (1.2) * (10 ** 9); // two weeks back in milliseconds
 
   Contact.find({ primaryUser: req.sourceUserID }).then((results) => {
@@ -108,6 +112,7 @@ export const runTracing = (req, res) => {
           User.findOne({ _id: contact.contactedUser })
             .then((contactedUser) => {
               if (contactedUser !== null) {
+                console.log('LINE 115 HERE', contactedUser);
                 addMessage({
                   covid: req.covid,
                   tested: req.tested,

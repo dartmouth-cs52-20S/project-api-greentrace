@@ -17,6 +17,7 @@ export const addMessageAPI = (req, res) => {
 };
 
 export const addMessage = (req, res) => {
+  console.log('in ADDMESSAGE', req);
   const newMessage = new Message();
   newMessage.covid = req.covid;
   newMessage.tested = req.tested;
@@ -24,7 +25,7 @@ export const addMessage = (req, res) => {
   newMessage.userID = req.userID;
   newMessage.save()
     .then((result) => {
-      // res.json(result);
+      console.log(result);
     })
     .catch((error) => {
       // res.status(500).json({ error });
