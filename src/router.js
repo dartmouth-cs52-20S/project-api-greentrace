@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as Observations from './controllers/observation-controller';
 import * as User from './controllers/user-controller';
 import * as Message from './controllers/message-controller';
-import { getNumPeopleTested, getHeatmap, getNumPositive } from './services/utils';
+import { getNumPeopleTested, getNumPositive } from './services/utils';
 import { requireSignin } from './services/passport';
 
 

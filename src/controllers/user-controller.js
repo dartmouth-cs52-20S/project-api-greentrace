@@ -52,32 +52,28 @@ export const signup = (req, res, next) => {
 
         // send sign-up email
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        sgMail
-          .send(msg)
-          .then(() => {}, (error) => {
-            console.error(error);
-
-            if (error.response) {
-              console.error(error.response.body);
-            }
-          });
-        // make new user
-        const newUser = new User();
-        newUser.phraseToken = phraseToken;
-        newUser.password = password;
-        newUser.tested = false;
-        newUser.covid = false;
-        newUser.symptoms = defaultSymptoms;
-        newUser.risk = 0;
-        newUser.save()
-          .then((result) => {
-            res.send({
-              token: tokenForUser(result),
-              user: result,
-            });
-          })
-          .catch((error) => {
-            return res.status(500).send({ error });
+        sgMail.send(msg)
+          .then(() => {
+            // make new user
+            const newUser = new User();
+            newUser.phraseToken = phraseToken;
+            newUser.password = password;
+            newUser.tested = false;
+            newUser.covid = false;
+            newUser.symptoms = defaultSymptoms;
+            newUser.risk = 0;
+            newUser.save()
+              .then((result) => {
+                res.send({
+                  token: tokenForUser(result),
+                  user: result,
+                });
+              })
+              .catch((error) => {
+                return res.status(500).send({ error });
+              });
+          }, (error) => {
+            return res.status(550).send(error.response);
           });
       }
     })
