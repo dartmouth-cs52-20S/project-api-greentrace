@@ -242,8 +242,8 @@ function countPositiveContacts(contacts, callback, num, users) {
       // adjust when we add token
       // console.log('user_id', user.email);
       if ((user.covid)) {
-        if (!users.includes(user.email)) {
-          users.push(user.email);
+        if (!users.includes(user.phraseToken)) {
+          users.push(user.phraseToken);
           // console.log(!users.includes(user.email));
           // console.log(num);
           num += 1;
