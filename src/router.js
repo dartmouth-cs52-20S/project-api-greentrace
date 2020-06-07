@@ -42,6 +42,8 @@ router.route('/user/:id/messages')
   .get(Message.getMessages)
   .post(Message.addMessageAPI);
 
+router.post('/user/:id/changePassword', requireSignin, User.changePassword);
+
 router.post('/signin', requireSignin, User.signin); // add requireSignin here, requireAuth elsewhere
 
 router.post('/signup', User.signup);
