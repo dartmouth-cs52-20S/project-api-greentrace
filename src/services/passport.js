@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import User from '../models/user-model';
 
 require('dotenv').config();
+
 dotenv.config({ silent: true });
 
 // options for local strategy, we'll use email AS the username

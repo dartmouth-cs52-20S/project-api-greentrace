@@ -24,6 +24,26 @@ export const signin = (req, res, next) => {
   });
 };
 
+export const changePassword = (req, res, next) => {
+  const { newPass } = req.body;
+  User.findOne({ _id: req.params.id })
+    .then((user) => {
+      user.password = newPass;
+      user.save()
+        .then((result) => {
+          res.send({
+            token: tokenForUser(req.user),
+            user: req.user,
+          });
+        }).catch((error) => {
+          res.send({ error });
+        });
+    })
+    .catch((error) => {
+      res.send({ error });
+    });
+};
+
 export const signup = (req, res, next) => {
   const { email } = req.body;
   const { password } = req.body;
