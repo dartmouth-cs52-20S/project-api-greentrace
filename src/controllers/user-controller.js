@@ -1,14 +1,15 @@
+/* eslint-disable no-loop-func */
 /* eslint-disable func-names */
 /* eslint-disable prefer-arrow-callback */
 import jwt from 'jwt-simple';
 import dotenv from 'dotenv';
 import randomWords from 'random-words';
+import sgMail from '@sendgrid/mail';
 import User from '../models/user-model';
 import { riskScorer, defaultSymptoms } from '../services/utils';
 import { addMessage } from './message-controller';
 import Contact from '../models/contact-model';
 import Observation from '../models/observation-model';
-import sgMail from '@sendgrid/mail';
 
 dotenv.config({ silent: true });
 
@@ -35,7 +36,7 @@ export const signup = (req, res, next) => {
 
   // generate wordToken
   const phraseToken = randomWords({ exactly: 2, join: '-' });
-  
+
   return User.findOne({ phraseToken })
     // eslint-disable-next-line consistent-return
     .then((user) => {
@@ -53,13 +54,13 @@ export const signup = (req, res, next) => {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         sgMail
           .send(msg)
-          .then(() => {}, error => {
+          .then(() => {}, (error) => {
             console.error(error);
 
             if (error.response) {
-              console.error(error.response.body)
+              console.error(error.response.body);
             }
-        });
+          });
         // make new user
         const newUser = new User();
         newUser.phraseToken = phraseToken;
@@ -115,7 +116,7 @@ export const runTracing = (req, res) => {
                   covid: req.covid,
                   tested: req.tested,
                   contactDate: contact.initialContactTime,
-                  userID: contactedUser,
+                  userID: contactedUser._id,
                 }, res);
               }
             })
@@ -191,18 +192,39 @@ export const getRiskScore = (req, res) => {
 };
 
 export const getNumContactsCovidPositive = (req, res) => {
-  return User.findOne({ _id: req.params.id })
+  console.log('made it into getNumContactsCovidPositive', req.params.id);
+  return Contact.find({ contactedUser: req.params.id })
     // eslint-disable-next-line consistent-return
-    .then((user) => {
-      // calculate risk score
-      Message.countDocuments({ userID: user._id, covid: true })
-        .then((result) => {
-          const numContacts = result;
-        })
-        .catch((error) => {
-          const numContacts = 100;
-        }) 
-      return res.json({ message: numContacts });
+    .then((contacts) => {
+      let positiveContacts = 0;
+      const listLength = contacts.length;
+      // eslint-disable-next-line no-plusplus
+      for (let i = 0; i < listLength; i++) {
+        const user = contacts[i];
+        User.find({ _id: user.primaryUser })
+          // eslint-disable-next-line consistent-return
+          .then((result) => {
+            if (i !== listLength - 1) {
+              console.log('hit');
+              const result1 = result[0];
+              if (result1.covid === true) {
+                // eslint-disable-next-line no-plusplus
+                positiveContacts++;
+              }
+            } else if (i === listLength - 1) {
+              console.log('smash');
+              const result2 = result[0];
+              if (result2.covid === true) {
+                // eslint-disable-next-line no-plusplus
+                positiveContacts++;
+              }
+              return res.json({ message: positiveContacts });
+            }
+          })
+          .catch((err) => {
+            res.status(500).send({ err });
+          });
+      }
     })
     .catch((error) => {
       return res.status(500).send({ error });
