@@ -67,7 +67,7 @@ export const signup = (req, res, next) => {
           to: `${email}`,
           from: 'greentracedartmouth@gmail.com',
           subject: 'Your GreenTrace Phrase Token',
-          html: `<strong>${phraseToken}</strong>`,
+          html: `<p>This is your GreenTrace login token:</p> <br /> <strong>${phraseToken}</strong> <br /> <p>Keep it safe!</p>`,
         };
 
         // send sign-up email
