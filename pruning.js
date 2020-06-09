@@ -13,7 +13,6 @@ mongoose.Promise = global.Promise;
 async function pruneContacts() {
   return Contact.deleteMany({ endContactTime: { $lt: (currTimestamp - twoWeeks) } })
     .then((result) => {
-      console.log(result.length);
     })
     .catch((error) => {
       console.error(error);
@@ -23,7 +22,6 @@ async function pruneContacts() {
 async function pruneObservations() {
   return Observation.deleteMany({ dataExitTimestamp: { $lt: (currTimestamp - twoWeeks) } })
     .then((result) => {
-      console.log(result.length);
     })
     .catch((error) => {
       console.error(error);
