@@ -43,7 +43,6 @@ app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Greentrace!' });
 });
 
-
 // START THE SERVER
 // =============================================================================
 const port = process.env.PORT || 9090;

@@ -5,7 +5,6 @@ import * as Message from './controllers/message-controller';
 import { getNumPeopleTested, getNumPositive } from './services/utils';
 import { requireSignin } from './services/passport';
 
-
 const router = Router();
 
 router.get('/', (req, res) => {
