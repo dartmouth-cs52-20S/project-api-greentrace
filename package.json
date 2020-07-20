@@ -1,0 +1,57 @@
+{
+  "name": "example_express_with_es6",
+  "version": "3.0.0",
+  "description": "",
+  "author": "",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "eslint src/**.js",
+    "dev": "nodemon src/server.js --exec babel-node",
+    "start": "babel-node src/server.js",
+    "build": "babel src -d dist",
+    "prod": "yarn build; node dist/server.js",
+    "cleanup": "babel-node ./pruning.js"
+  },
+  "license": "ISC",
+  "engines": {
+    "node": ">=9 <=15",
+    "npm": "^5.6.0",
+    "yarn": "^1.6.0"
+  },
+  "nodemonConfig": {
+    "signal": "SIGHUP",
+    "delay": "1500"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/node": "^7.8.7",
+    "@babel/preset-env": "^7.9.5",
+    "@sendgrid/mail": "^7.1.1",
+    "axios": "^0.19.2",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.1.2",
+    "express": "^4.17.1",
+    "jwt-simple": "^0.5.6",
+    "moment": "^2.26.0",
+    "mongoose": "^5.9.13",
+    "mongoose-geojson-schema": "^2.1.5",
+    "morgan": "^1.10.0",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "random-words": "^1.1.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.19.0",
+    "nodemon": "^2.0.3"
+  }
+}
