@@ -36,7 +36,7 @@
     "ejs": "^3.1.2",
     "express": "^4.17.1",
     "jwt-simple": "^0.5.6",
-    "moment": "^2.26.0",
+    "moment": "^2.29.4",
     "mongoose": "^5.9.13",
     "mongoose-geojson-schema": "^2.1.5",
     "morgan": "^1.10.0",
